@@ -1,8 +1,6 @@
 'use client';
 
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import React, { useState, useEffect } from 'react';
 import { 
   Home, 
   Zap, 
@@ -24,7 +22,11 @@ interface NavItem {
 }
 
 export function MobileNav() {
-  const pathname = usePathname();
+  const [pathname, setPathname] = useState('/');
+
+  useEffect(() => {
+    setPathname(window.location.pathname);
+  }, []);
 
   const navItems: NavItem[] = [
     {
@@ -57,7 +59,7 @@ export function MobileNav() {
             (item.href !== '/' && pathname.startsWith(item.href));
           
           return (
-            <Link
+            <a
               key={item.href}
               href={item.href}
               className={`mobile-nav-item ${isActive ? 'active' : ''}`}
@@ -73,7 +75,7 @@ export function MobileNav() {
                   {item.badge}
                 </span>
               )}
-            </Link>
+            </a>
           );
         })}
       </div>
@@ -82,7 +84,11 @@ export function MobileNav() {
 }
 
 export function MobileToolNav() {
-  const pathname = usePathname();
+  const [pathname, setPathname] = useState('/');
+
+  useEffect(() => {
+    setPathname(window.location.pathname);
+  }, []);
 
   const toolCategories = [
     {
@@ -123,7 +129,7 @@ export function MobileToolNav() {
         const isActive = pathname === category.href;
         
         return (
-          <Link
+          <a
             key={category.href}
             href={category.href}
             className={`
@@ -140,7 +146,7 @@ export function MobileToolNav() {
             <span className="text-sm font-medium">
               {category.label}
             </span>
-          </Link>
+          </a>
         );
       })}
     </div>
@@ -148,7 +154,11 @@ export function MobileToolNav() {
 }
 
 export function MobileSidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const pathname = usePathname();
+  const [pathname, setPathname] = useState('/');
+
+  useEffect(() => {
+    setPathname(window.location.pathname);
+  }, []);
 
   const sidebarItems = [
     {
@@ -226,7 +236,7 @@ export function MobileSidebar({ isOpen, onClose }: { isOpen: boolean; onClose: (
               (item.href !== '/' && pathname.startsWith(item.href));
             
             return (
-              <Link
+              <a
                 key={item.href}
                 href={item.href}
                 onClick={onClose}
@@ -244,7 +254,7 @@ export function MobileSidebar({ isOpen, onClose }: { isOpen: boolean; onClose: (
                 <span className="font-medium">
                   {item.label}
                 </span>
-              </Link>
+              </a>
             );
           })}
         </nav>
