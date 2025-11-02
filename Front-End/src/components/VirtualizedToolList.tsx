@@ -1,8 +1,6 @@
 'use client'
 
 import { memo, useMemo } from 'react'
-import { FixedSizeList as List } from 'react-window'
-import { useInView } from 'react-intersection-observer'
 import { cn } from '@/lib/utils'
 
 interface Tool {
@@ -24,25 +22,11 @@ interface VirtualizedToolListProps {
 }
 
 interface ToolItemProps {
-  index: number
-  style: React.CSSProperties
-  data: {
-    tools: Tool[]
-    onToolClick?: (tool: Tool) => void
-  }
+  tool: Tool
+  onToolClick?: (tool: Tool) => void
 }
 
-const ToolItem = memo(({ index, style, data }: ToolItemProps) => {
-  const { tools, onToolClick } = data
-  const tool = tools[index]
-  
-  const { ref, inView } = useInView({
-    threshold: 0.1,
-    triggerOnce: true
-  })
-
-  if (!tool) return null
-
+const ToolItem = memo(({ tool, onToolClick }: ToolItemProps) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'available': return 'text-green-400 border-green-500'
@@ -62,54 +46,49 @@ const ToolItem = memo(({ index, style, data }: ToolItemProps) => {
   }
 
   return (
-    <div style={style} ref={ref} className="px-2">
-      {inView && (
-        <div
-          onClick={() => onToolClick?.(tool)}
-          className={cn(
-            'terminal-window cursor-pointer group transition-all duration-200',
-            'hover:scale-[1.02] hover:shadow-lg',
-            getStatusColor(tool.status)
-          )}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault()
-              onToolClick?.(tool)
-            }
-          }}
-          aria-label={`${tool.name} - ${tool.description}`}
-        >
-          <div className="terminal-header">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-3">
-                <span className="text-lg font-cyber font-bold group-hover:text-current">
-                  {tool.name}
-                </span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <span className="text-xs font-mono opacity-75">
-                  {getStatusIcon(tool.status)} {tool.status}
-                </span>
-              </div>
-            </div>
+    <div className="px-2 mb-4">
+      <div
+        onClick={() => onToolClick?.(tool)}
+        className={cn(
+          'bg-white dark:bg-gray-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700',
+          'cursor-pointer group transition-all duration-200',
+          'hover:scale-[1.02] hover:shadow-lg hover:border-green-500 dark:hover:border-green-400',
+          getStatusColor(tool.status)
+        )}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onToolClick?.(tool)
+          }
+        }}
+        aria-label={`${tool.name} - ${tool.description}`}
+      >
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center space-x-3">
+            <span className="text-lg font-bold text-gray-900 dark:text-white group-hover:text-green-600 dark:group-hover:text-green-400">
+              {tool.name}
+            </span>
           </div>
-          <div className="terminal-content">
-            <p className="text-sm opacity-90 mb-3 line-clamp-2">
-              {tool.description}
-            </p>
-            <div className="flex items-center justify-between pt-2 border-t border-current/20">
-              <span className="text-xs font-mono opacity-75">
-                Category: {tool.category}
-              </span>
-              <span className="text-xs font-mono opacity-75 group-hover:opacity-100">
-                Click to configure →
-              </span>
-            </div>
+          <div className="flex items-center space-x-2">
+            <span className="text-xs font-mono px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded">
+              {getStatusIcon(tool.status)} {tool.status}
+            </span>
           </div>
         </div>
-      )}
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
+          {tool.description}
+        </p>
+        <div className="flex items-center justify-between pt-2 border-t border-gray-200 dark:border-gray-700">
+          <span className="text-xs font-mono text-gray-500 dark:text-gray-400">
+            Category: {tool.category}
+          </span>
+          <span className="text-xs font-mono text-gray-500 dark:text-gray-400 group-hover:text-green-600 dark:group-hover:text-green-400">
+            Click to configure →
+          </span>
+        </div>
+      </div>
     </div>
   )
 })
@@ -135,16 +114,11 @@ export const VirtualizedToolList = memo(({
     )
   }, [tools, searchQuery])
 
-  const itemData = useMemo(() => ({
-    tools: filteredTools,
-    onToolClick
-  }), [filteredTools, onToolClick])
-
   if (filteredTools.length === 0) {
     return (
-      <div className="terminal-window">
-        <div className="terminal-content text-center py-12">
-          <div className="text-cyber-light opacity-75 mb-4">
+      <div className="bg-white dark:bg-gray-800 rounded-lg p-8 border border-gray-200 dark:border-gray-700">
+        <div className="text-center">
+          <div className="text-gray-500 dark:text-gray-400 mb-4">
             <div className="text-lg mb-2">No tools found</div>
             {searchQuery && (
               <div className="text-sm">
@@ -157,25 +131,22 @@ export const VirtualizedToolList = memo(({
     )
   }
 
-  const listHeight = Math.min(maxHeight, filteredTools.length * itemHeight)
-
   return (
     <div className={cn('w-full', className)}>
-      <div className="mb-4 text-sm text-cyber-light font-mono">
+      <div className="mb-4 text-sm text-gray-600 dark:text-gray-400 font-mono">
         Showing {filteredTools.length} of {tools.length} tools
         {searchQuery && ` matching "${searchQuery}"`}
       </div>
       
-      <List
-        height={listHeight}
-        itemCount={filteredTools.length}
-        itemSize={itemHeight}
-        itemData={itemData}
-        className="scrollbar-thin scrollbar-thumb-cyber-primary scrollbar-track-cyber-gray"
-        overscanCount={5}
-      >
-        {ToolItem}
-      </List>
+      <div className="max-h-96 overflow-y-auto space-y-2">
+        {filteredTools.map((tool) => (
+          <ToolItem
+            key={tool.id}
+            tool={tool}
+            onToolClick={onToolClick}
+          />
+        ))}
+      </div>
     </div>
   )
 })

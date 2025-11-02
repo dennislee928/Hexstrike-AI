@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, Command, ArrowRight, Hash, Zap, Settings, HelpCircle } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 
 interface Command {
   id: string;
@@ -22,7 +21,6 @@ interface CommandPaletteProps {
 export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
   const [query, setQuery] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
-  const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Define available commands
@@ -35,7 +33,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
       category: 'Navigation',
       icon: <Hash size={16} />,
       action: () => {
-        router.push('/');
+        window.location.href = '/';
         onClose();
       },
       keywords: ['dashboard', 'home', 'main']
@@ -47,7 +45,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
       category: 'Navigation',
       icon: <Zap size={16} />,
       action: () => {
-        router.push('/tools');
+        window.location.href = '/tools';
         onClose();
       },
       keywords: ['tools', 'security', 'browse']
@@ -59,7 +57,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
       category: 'Tools',
       icon: <Zap size={16} />,
       action: () => {
-        router.push('/tools/network');
+        window.location.href = '/tools/network';
         onClose();
       },
       keywords: ['network', 'nmap', 'scan', 'recon']
@@ -71,7 +69,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
       category: 'Tools',
       icon: <Zap size={16} />,
       action: () => {
-        router.push('/tools/web');
+        window.location.href = '/tools/web';
         onClose();
       },
       keywords: ['web', 'webapp', 'gobuster', 'nuclei', 'burp']
@@ -83,7 +81,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
       category: 'Tools',
       icon: <Zap size={16} />,
       action: () => {
-        router.push('/tools/binary');
+        window.location.href = '/tools/binary';
         onClose();
       },
       keywords: ['binary', 'reverse', 'ghidra', 'radare2', 'analysis']
@@ -95,7 +93,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
       category: 'Tools',
       icon: <Zap size={16} />,
       action: () => {
-        router.push('/tools/cloud');
+        window.location.href = '/tools/cloud';
         onClose();
       },
       keywords: ['cloud', 'aws', 'azure', 'gcp', 'prowler']
@@ -107,7 +105,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
       category: 'Tools',
       icon: <Zap size={16} />,
       action: () => {
-        router.push('/tools/forensics');
+        window.location.href = '/tools/forensics';
         onClose();
       },
       keywords: ['forensics', 'volatility', 'memory', 'disk', 'analysis']
@@ -165,7 +163,7 @@ export function CommandPalette({ isOpen, onClose }: CommandPaletteProps) {
       },
       keywords: ['shortcuts', 'keyboard', 'hotkeys', 'help']
     }
-  ], [router, onClose]);
+  ], [onClose]);
 
   // Filter commands based on query
   const filteredCommands = useMemo(() => {
