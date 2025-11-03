@@ -5,10 +5,18 @@ const nextConfig = {
   trailingSlash: true,
   images: {
     unoptimized: true,
-    domains: ['localhost', 'hexstrike-ai-v6-0.onrender.com'],
   },
   env: {
-    HEXSTRIKE_API_URL: process.env.HEXSTRIKE_API_URL || 'https://hexstrike-ai-v6-0.onrender.com',
+    NEXT_PUBLIC_HEXSTRIKE_API_URL: process.env.NEXT_PUBLIC_HEXSTRIKE_API_URL || 'https://hexstrike-ai-v6-0.onrender.com',
+  },
+  // Disable server-side features for static export
+  typescript: {
+    // Don't fail build on type errors during development
+    ignoreBuildErrors: false,
+  },
+  eslint: {
+    // Don't fail build on lint errors during development
+    ignoreDuringBuilds: false,
   },
 }
 
