@@ -85,5 +85,13 @@ def register_error_handlers(app):
 
 def initialize_extensions(app):
     """Initialize Flask extensions"""
+    from api.middleware import setup_cors, setup_rate_limiting
+    
+    # Setup CORS
+    setup_cors(app)
+    
+    # Setup rate limiting
+    setup_rate_limiting(app)
+    
     # Initialize database connections, caching, etc.
     pass
