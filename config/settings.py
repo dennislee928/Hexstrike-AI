@@ -50,6 +50,26 @@ class Config:
     # Debug Configuration
     DEBUG_MODE = os.environ.get('DEBUG_MODE', 'false').lower() == 'true'
     
+    # CORS Configuration
+    CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 
+        'http://localhost:3000,https://localhost:3000,https://hexstrike-ai-fe.netlify.app').split(',')
+    CORS_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
+    CORS_ALLOW_HEADERS = [
+        'Content-Type',
+        'Authorization',
+        'X-Requested-With',
+        'X-CSRF-Token',
+        'X-API-Key'
+    ]
+    CORS_EXPOSE_HEADERS = [
+        'X-Total-Count',
+        'X-Page-Count',
+        'X-Rate-Limit-Remaining',
+        'X-API-Version'
+    ]
+    CORS_SUPPORTS_CREDENTIALS = True
+    CORS_MAX_AGE = 86400  # 24 hours
+    
     @classmethod
     def get_config_dict(cls) -> Dict[str, Any]:
         """Get configuration as dictionary"""

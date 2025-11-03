@@ -90,6 +90,27 @@ logger = logging.getLogger(__name__)
 app = Flask(__name__)
 app.config['JSON_SORT_KEYS'] = False
 
+# Configure CORS for frontend access
+try:
+    from flask_cors import CORS
+    
+    # Get CORS origins from environment or use defaults
+    cors_origins = os.environ.get('CORS_ORIGINS', 
+        'http://localhost:3000,https://localhost:3000,https://hexstrike-ai-fe.netlify.app').split(',')
+    
+    CORS(app, 
+         origins=[origin.strip() for origin in cors_origins],
+         methods=['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+         allow_headers=['Content-Type', 'Authorization', 'X-Requested-With', 'X-CSRF-Token', 'X-API-Key'],
+         expose_headers=['X-Total-Count', 'X-Page-Count', 'X-Rate-Limit-Remaining', 'X-API-Version'],
+         supports_credentials=True,
+         max_age=86400)
+    
+    logger.info(f"✅ CORS configured with origins: {cors_origins}")
+except ImportError:
+    logger.warning("⚠️  Flask-CORS not installed. CORS headers will not be set.")
+    print("⚠️  Flask-CORS not installed. Install with: pip install Flask-CORS")
+
 # 導入並註冊 API 藍圖
 try:
     from api import api_bp

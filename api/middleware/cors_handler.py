@@ -14,20 +14,32 @@ logger = logging.getLogger(__name__)
 def setup_cors(app: Flask):
     """Setup CORS configuration for the Flask app"""
     
-    # Get CORS configuration from app config
+    # Get CORS configuration from app config with defaults
+    cors_origins = app.config.get('CORS_ORIGINS', [
+        'http://localhost:3000', 
+        'https://localhost:3000',
+        'https://hexstrike-ai-fe.netlify.app'
+    ])
+    
+    # Ensure it's a list
+    if isinstance(cors_origins, str):
+        cors_origins = [origin.strip() for origin in cors_origins.split(',')]
+    
     cors_config = {
-        'origins': app.config.get('CORS_ORIGINS', ['http://localhost:3000', 'https://localhost:3000']),
-        'methods': app.config.get('CORS_METHODS', ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']),
+        'origins': cors_origins,
+        'methods': app.config.get('CORS_METHODS', ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']),
         'allow_headers': app.config.get('CORS_ALLOW_HEADERS', [
             'Content-Type',
             'Authorization',
             'X-Requested-With',
-            'X-CSRF-Token'
+            'X-CSRF-Token',
+            'X-API-Key'
         ]),
         'expose_headers': app.config.get('CORS_EXPOSE_HEADERS', [
             'X-Total-Count',
             'X-Page-Count',
-            'X-Rate-Limit-Remaining'
+            'X-Rate-Limit-Remaining',
+            'X-API-Version'
         ]),
         'supports_credentials': app.config.get('CORS_SUPPORTS_CREDENTIALS', True),
         'max_age': app.config.get('CORS_MAX_AGE', 86400)  # 24 hours
