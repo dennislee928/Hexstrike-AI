@@ -149,19 +149,16 @@ export function useToastActions() {
     info: (message: string, title?: string) =>
       addToast({ type: 'info', message, title }),
     
-    promise: async <T>(
+    promise: async <T,>(
       promise: Promise<T>,
-      {
-        loading,
-        success,
-        error
-      }: {
+      options: {
         loading: string
         success: string | ((data: T) => string)
         error: string | ((error: any) => string)
       }
     ) => {
-      const loadingToast = addToast({ type: 'info', message: loading, duration: Infinity })
+      const { loading, success, error } = options
+      addToast({ type: 'info', message: loading, duration: Infinity })
       
       try {
         const result = await promise

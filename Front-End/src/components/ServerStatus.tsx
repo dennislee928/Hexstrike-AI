@@ -6,21 +6,17 @@ import { StatusCard } from './StatusCard'
 import { CheckCircle, Zap, Brain } from 'lucide-react'
 
 export function ServerStatus() {
-  const { data: health, isLoading: healthLoading } = useQuery(
-    'health',
-    () => apiClient.getHealth(),
-    {
-      refetchInterval: 5000,
-    }
-  )
+  const { data: health, isLoading: healthLoading } = useQuery({
+    queryKey: ['health'],
+    queryFn: () => apiClient.getHealth(),
+    refetchInterval: 5000,
+  })
 
-  const { data: toolCount, isLoading: toolCountLoading } = useQuery(
-    'tool-count',
-    () => apiClient.getToolCount(),
-    {
-      refetchInterval: 60000, // Refresh every minute
-    }
-  )
+  const { data: toolCount, isLoading: toolCountLoading } = useQuery({
+    queryKey: ['tool-count'],
+    queryFn: () => apiClient.getToolCount(),
+    refetchInterval: 60000, // Refresh every minute
+  })
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -106,11 +106,11 @@ class PerformanceMonitor {
     this.addMetric('TTFB', ttfb, this.getTTFBRating(ttfb));
 
     // DOM Content Loaded
-    const dcl = entry.domContentLoadedEventEnd - entry.navigationStart;
+    const dcl = entry.domContentLoadedEventEnd - entry.fetchStart;
     this.addMetric('DCL', dcl, this.getLoadRating(dcl));
 
     // Load Complete
-    const loadComplete = entry.loadEventEnd - entry.navigationStart;
+    const loadComplete = entry.loadEventEnd - entry.fetchStart;
     this.addMetric('Load', loadComplete, this.getLoadRating(loadComplete));
   }
 
@@ -338,7 +338,8 @@ export function sendPerformanceData(metrics: WebVitalsMetrics) {
   console.log('Performance metrics:', metrics);
   
   // Example: Send to Google Analytics 4
-  if (typeof gtag !== 'undefined') {
+  if (typeof window !== 'undefined' && typeof (window as any).gtag !== 'undefined') {
+    const gtag = (window as any).gtag;
     Object.entries(metrics).forEach(([name, metric]) => {
       if (metric) {
         gtag('event', 'web_vital', {

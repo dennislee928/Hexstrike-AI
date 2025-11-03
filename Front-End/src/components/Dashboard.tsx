@@ -28,31 +28,25 @@ export function Dashboard() {
   ])
 
   // Fetch health status
-  const { data: health, isLoading: healthLoading } = useQuery(
-    'health',
-    () => apiClient.getHealth(),
-    {
-      refetchInterval: 5000,
-    }
-  )
+  const { data: health, isLoading: healthLoading } = useQuery({
+    queryKey: ['health'],
+    queryFn: () => apiClient.getHealth(),
+    refetchInterval: 5000,
+  })
 
   // Fetch telemetry data
-  const { data: telemetry, isLoading: telemetryLoading } = useQuery(
-    'telemetry',
-    () => apiClient.getTelemetry(),
-    {
-      refetchInterval: 3000,
-    }
-  )
+  const { data: telemetry, isLoading: telemetryLoading } = useQuery({
+    queryKey: ['telemetry'],
+    queryFn: () => apiClient.getTelemetry(),
+    refetchInterval: 3000,
+  })
 
   // Fetch process dashboard
-  const { data: processDashboard, isLoading: processLoading } = useQuery(
-    'process-dashboard',
-    () => apiClient.getProcessDashboard(),
-    {
-      refetchInterval: 2000,
-    }
-  )
+  const { data: processDashboard, isLoading: processLoading } = useQuery({
+    queryKey: ['process-dashboard'],
+    queryFn: () => apiClient.getProcessDashboard(),
+    refetchInterval: 2000,
+  })
 
   return (
     <div className="p-6 space-y-6">
