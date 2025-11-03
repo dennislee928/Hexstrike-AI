@@ -7,6 +7,7 @@ import { Providers } from './providers'
 import { ThemeProvider } from '@/contexts/ThemeContext'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import { AppLayout } from '@/components/layout/AppLayout'
+import { ToastProvider } from '@/components/ui/Toast'
 
 const inter = Inter({ 
   subsets: ['latin'],
@@ -107,11 +108,13 @@ export default function RootLayout({
       >
         <ErrorBoundary>
           <ThemeProvider>
-            <Providers>
-              <AppLayout>
-                {children}
-              </AppLayout>
-            </Providers>
+            <ToastProvider>
+              <Providers>
+                <AppLayout>
+                  {children}
+                </AppLayout>
+              </Providers>
+            </ToastProvider>
           </ThemeProvider>
         </ErrorBoundary>
       </body>

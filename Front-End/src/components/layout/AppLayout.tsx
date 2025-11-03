@@ -6,7 +6,6 @@ import { Header } from '@/components/Header';
 import { Sidebar } from '@/components/Sidebar';
 import { MobileNav } from '@/components/navigation/MobileNav';
 import { GlobalKeyboardShortcuts } from '@/components/GlobalKeyboardShortcuts';
-import { Toast } from '@/components/ui/Toast';
 import { useTheme } from '@/contexts/ThemeContext';
 
 interface AppLayoutProps {
@@ -60,7 +59,6 @@ export function AppLayout({ children }: AppLayoutProps) {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
       {/* Global Components */}
       <GlobalKeyboardShortcuts />
-      <Toast />
 
       {/* Cyberpunk Effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">

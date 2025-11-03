@@ -1,3 +1,5 @@
+'use client'
+
 import { Dashboard } from '@/components/Dashboard'
 import { Suspense } from 'react'
 import { 
@@ -6,7 +8,6 @@ import {
   Brain, 
   Activity, 
   TrendingUp, 
-  AlertTriangle,
   CheckCircle,
   Clock
 } from 'lucide-react'
@@ -14,9 +15,7 @@ import {
 export default function Home() {
   return (
     <div className="min-h-full">
-      {/* Hero Section */}
       <div className="relative overflow-hidden bg-gradient-to-br from-green-50 via-white to-blue-50 dark:from-gray-900 dark:via-gray-900 dark:to-gray-800">
-        {/* Background Pattern */}
         <div className="absolute inset-0 opacity-5 dark:opacity-10">
           <div 
             className="w-full h-full"
@@ -28,7 +27,6 @@ export default function Home() {
 
         <div className="relative px-6 py-12 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            {/* Welcome Banner */}
             <div className="text-center mb-12">
               <div className="flex justify-center mb-6">
                 <div className="relative">
@@ -54,7 +52,6 @@ export default function Home() {
                 bug bounty hunting, and CTF competitions.
               </p>
 
-              {/* Quick Stats */}
               <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
                 <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                   <div className="flex items-center justify-center space-x-2">
@@ -90,7 +87,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Feature Highlights */}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-12">
               <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700 hover:shadow-lg transition-all duration-200">
                 <div className="flex items-center space-x-3 mb-4">
@@ -135,7 +131,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* System Status Overview */}
             <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-xl p-6 border border-gray-200 dark:border-gray-700 mb-8">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
@@ -170,7 +165,7 @@ export default function Home() {
                   <Clock className="w-5 h-5 text-blue-500" />
                   <div>
                     <p className="text-sm font-medium text-gray-900 dark:text-white">Response Time</p>
-                    <p className="text-xs text-blue-600 dark:text-blue-400">< 100ms</p>
+                    <p className="text-xs text-blue-600 dark:text-blue-400">&lt; 100ms</p>
                   </div>
                 </div>
 
@@ -187,7 +182,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Main Dashboard Content */}
       <div className="bg-gray-50 dark:bg-gray-900">
         <Suspense fallback={
           <div className="flex items-center justify-center p-12">
