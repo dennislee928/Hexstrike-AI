@@ -52,10 +52,17 @@ echo ""
 if [ "$1" = "worker" ]; then
     echo "🔄 Starting in worker mode..."
     python3 hexstrike_worker.py &
+    PID=$!
 else
     echo "🌐 Starting web server..."
     python3 hexstrike_server.py --port "$HEXSTRIKE_PORT" --host "$HEXSTRIKE_HOST" &
+    PID=$!
 fi
 
+# Wait for the process to complete
+wait $PID
+EXIT_CODE=$?
 
+echo "🛑 Process exited with code $EXIT_CODE"
+exit $EXIT_CODE
 
