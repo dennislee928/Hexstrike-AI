@@ -9053,7 +9053,10 @@ file_manager = FileOperationsManager()
 
 @app.route("/", methods=["GET"])
 def dashboard():
-    """Serve the main dashboard interface"""
+    """Serve the main dashboard interface or simple health check"""
+    # 如果是健康檢查請求（Accept: text/html 或其他），返回簡單響應
+    if 'text/html' not in request.headers.get('Accept', ''):
+        return jsonify({"status": "ok", "service": "HexStrike AI"}), 200
     return render_template('index.html')
 
 @app.route("/static/<path:filename>")
@@ -9062,8 +9065,25 @@ def static_files(filename):
     return send_from_directory('static', filename)
 
 @app.route("/health", methods=["GET"])
-def health_check():
-    """Health check endpoint with comprehensive tool detection"""
+def health_quick():
+    """Quick health check for deployment systems (Render, Docker, K8s)"""
+    try:
+        return jsonify({
+            "status": "healthy",
+            "message": "HexStrike AI Tools API Server is operational",
+            "version": "6.0.1",
+            "timestamp": time.time()
+        }), 200
+    except Exception as e:
+        return jsonify({
+            "status": "unhealthy",
+            "error": str(e)
+        }), 500
+
+@app.route("/health/detailed", methods=["GET"])
+@app.route("/health/full", methods=["GET"])
+def health_check_full():
+    """Comprehensive health check endpoint with full tool detection (slow, use /health for quick check)"""
 
     essential_tools = [
         "nmap", "gobuster", "dirb", "nikto", "sqlmap", "hydra", "john", "hashcat"
