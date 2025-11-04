@@ -8659,13 +8659,14 @@ cve_intelligence = CVEIntelligenceManager()
 exploit_generator = AIExploitGenerator()
 vulnerability_correlator = VulnerabilityCorrelator()
 
-def execute_command(command: str, use_cache: bool = True) -> Dict[str, Any]:
+def execute_command(command: str, use_cache: bool = True, timeout: int = None) -> Dict[str, Any]:
     """
     Execute a shell command with enhanced features
 
     Args:
         command: The command to execute
         use_cache: Whether to use caching for this command
+        timeout: Command timeout in seconds (None uses default)
 
     Returns:
         A dictionary containing the stdout, stderr, return code, and metadata
@@ -8677,8 +8678,11 @@ def execute_command(command: str, use_cache: bool = True) -> Dict[str, Any]:
         if cached_result:
             return cached_result
 
-    # Execute command
-    executor = EnhancedCommandExecutor(command)
+    # Execute command with optional timeout
+    if timeout:
+        executor = EnhancedCommandExecutor(command, timeout=timeout)
+    else:
+        executor = EnhancedCommandExecutor(command)
     result = executor.execute()
 
     # Cache successful results
@@ -9168,6 +9172,79 @@ def health_check():
         "cache_stats": cache.get_stats(),
         "telemetry": telemetry.get_stats(),
         "uptime": time.time() - telemetry.stats["start_time"]
+    })
+
+@app.route("/api/tools/status", methods=["GET"])
+def get_tools_status_detailed():
+    """Get detailed status and version information for critical security tools"""
+    
+    def check_tool_version(tool_name, version_flag="--version"):
+        """Check if tool is available and get its version"""
+        try:
+            result = execute_command(f"which {tool_name}", use_cache=True, timeout=5)
+            if not result.get("success"):
+                return {"installed": False, "version": None, "path": None}
+            
+            path = result.get("stdout", "").strip()
+            
+            # Try to get version
+            version_result = execute_command(f"{tool_name} {version_flag}", use_cache=True, timeout=5)
+            version_output = version_result.get("stdout", "") + version_result.get("stderr", "")
+            
+            # Extract version from output (simple extraction)
+            version = "unknown"
+            if version_output:
+                lines = version_output.split('\n')
+                if lines:
+                    version = lines[0][:100]  # First line, max 100 chars
+            
+            return {
+                "installed": True,
+                "version": version,
+                "path": path
+            }
+        except Exception as e:
+            return {"installed": False, "version": None, "path": None, "error": str(e)}
+    
+    # Critical tools to check
+    critical_tools = {
+        "nmap": {"version_flag": "--version"},
+        "rustscan": {"version_flag": "--version"},
+        "masscan": {"version_flag": "--version"},
+        "autorecon": {"version_flag": "--version"},
+        "gobuster": {"version_flag": "version"},
+        "dalfox": {"version_flag": "version"},
+        "nuclei": {"version_flag": "-version"},
+        "sqlmap": {"version_flag": "--version"},
+        "wpscan": {"version_flag": "--version"},
+        "amass": {"version_flag": "version"},
+        "subfinder": {"version_flag": "-version"},
+        "feroxbuster": {"version_flag": "--version"},
+        "hydra": {"version_flag": "-h"},
+        "john": {"version_flag": "--version"},
+        "hashcat": {"version_flag": "--version"},
+    }
+    
+    tools_status = {}
+    for tool, config in critical_tools.items():
+        tools_status[tool] = check_tool_version(tool, config["version_flag"])
+    
+    # Count available tools
+    available_count = sum(1 for status in tools_status.values() if status["installed"])
+    total_count = len(critical_tools)
+    
+    return jsonify({
+        "status": "success",
+        "timestamp": datetime.now().isoformat(),
+        "tools": tools_status,
+        "summary": {
+            "total": total_count,
+            "available": available_count,
+            "missing": total_count - available_count,
+            "availability_percentage": round((available_count / total_count) * 100, 2)
+        },
+        "server_version": "6.0.0",
+        "environment": "production" if not os.environ.get("DEBUG") else "development"
     })
 
 @app.route("/api/tools/count", methods=["GET"])
@@ -10387,12 +10464,13 @@ def create_comprehensive_bugbounty_assessment():
 # ============================================================================
 
 # Scan type mapping for semantic names
+# 注意：避免使用需要 root/CAP_NET_RAW 的選項（-sS, -O）
 SCAN_TYPE_MAPPING = {
-    "quick": "-F -sT",  # Fast scan top 100 ports
-    "comprehensive": "-sV -sC -A -sT",  # Service detection, scripts, OS detection
-    "stealth": "-sS -T2",  # SYN scan (requires root)
-    "udp": "-sU",  # UDP scan
-    "aggressive": "-A -T4",  # Aggressive scan
+    "quick": "-F -sT",  # Fast scan top 100 ports (TCP connect)
+    "comprehensive": "-sV -sC -sT -T4",  # Service detection, scripts (無 OS detection)
+    "stealth": "-sT -T2",  # TCP connect scan 慢速（替代 -sS SYN scan）
+    "udp": "-sU",  # UDP scan（可能仍需要權限）
+    "aggressive": "-sV -sC -T4 -sT",  # 積極掃描（無 -A 的 OS detection）
 }
 
 @app.route("/api/tools/nmap", methods=["POST"])
@@ -10485,10 +10563,23 @@ def gobuster():
 
         # If wordlist is just a name (not a full path), add the standard path
         if wordlist and "/" not in wordlist:
-            wordlist = f"/usr/share/wordlists/dirb/{wordlist}.txt"
+            # 避免雙重 .txt 副檔名
+            if not wordlist.endswith('.txt'):
+                wordlist = f"/usr/share/wordlists/dirb/{wordlist}.txt"
+            else:
+                wordlist = f"/usr/share/wordlists/dirb/{wordlist}"
             logger.info(f"📁 Expanded wordlist to: {wordlist}")
 
-        command = f"gobuster {mode} -u {url} -w {wordlist}"
+        # 根據模式使用不同的參數
+        if mode == "dns":
+            # DNS 模式使用 -d 或 --domain 而非 -u
+            command = f"gobuster {mode} -d {url} -w {wordlist}"
+        elif mode == "vhost" or mode == "dir" or mode == "fuzz":
+            # VHOST, DIR, FUZZ 模式使用 -u
+            command = f"gobuster {mode} -u {url} -w {wordlist}"
+        else:
+            # 預設使用 -u
+            command = f"gobuster {mode} -u {url} -w {wordlist}"
 
         if additional_args:
             command += f" {additional_args}"
@@ -11278,6 +11369,7 @@ def wpscan():
         params = request.json
         url = params.get("url", "")
         additional_args = params.get("additional_args", "")
+        timeout = params.get("timeout", 600)  # 預設 10 分鐘（從 5 分鐘增加）
 
         if not url:
             logger.warning("🌐 WPScan called without URL parameter")
@@ -11285,13 +11377,13 @@ def wpscan():
                 "error": "URL parameter is required"
             }), 400
 
-        command = f"wpscan --url {url}"
+        command = f"wpscan --url {url} --request-timeout 120 --connect-timeout 30"
 
         if additional_args:
             command += f" {additional_args}"
 
-        logger.info(f"🔍 Starting WPScan: {url}")
-        result = execute_command(command)
+        logger.info(f"🔍 Starting WPScan: {url} (timeout: {timeout}s)")
+        result = execute_command(command, timeout=timeout)
         logger.info(f"📊 WPScan completed for {url}")
         return jsonify(result)
     except Exception as e:
@@ -14526,6 +14618,7 @@ def dnsenum():
         dns_server = params.get("dns_server", "")
         wordlist = params.get("wordlist", "")
         additional_args = params.get("additional_args", "")
+        timeout = params.get("timeout", 600)  # 預設 10 分鐘（從 5 分鐘增加）
 
         if not domain:
             logger.warning("🌐 DNSenum called without domain parameter")
@@ -14540,12 +14633,16 @@ def dnsenum():
 
         if wordlist:
             command += f" --file {wordlist}"
+        
+        # 添加超時限制參數（如果 dnsenum 支援）
+        if "--timeout" not in additional_args:
+            command += " --threads 5"  # 限制執行緒數以避免過載
 
         if additional_args:
             command += f" {additional_args}"
 
-        logger.info(f"🔍 Starting DNSenum: {domain}")
-        result = execute_command(command)
+        logger.info(f"🔍 Starting DNSenum: {domain} (timeout: {timeout}s)")
+        result = execute_command(command, timeout=timeout)
         logger.info(f"📊 DNSenum completed for {domain}")
         return jsonify(result)
     except Exception as e:
