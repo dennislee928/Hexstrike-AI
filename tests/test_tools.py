@@ -1,5 +1,5 @@
 """
-Tests for Security Tools
+Tests that are for Security Tools
 
 This module contains unit tests for the security tools functionality.
 """
