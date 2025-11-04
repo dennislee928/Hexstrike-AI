@@ -96,7 +96,7 @@ try:
     
     # Get CORS origins from environment or use defaults
     cors_origins = os.environ.get('CORS_ORIGINS', 
-        'http://localhost:3000,https://localhost:3000,https://hexstrike-ai-fe.netlify.app').split(',')
+        'http://localhost:3000,https://localhost:3000,https://hexstrike-ai-fe.netlify.app,https://hexstrike-ai.quantumworld').split(',')
     
     CORS(app, 
          origins=[origin.strip() for origin in cors_origins],
@@ -9051,34 +9051,38 @@ file_manager = FileOperationsManager()
 
 # API Routes
 
-@app.route("/", methods=["GET"])
+@app.route("/", methods=["GET", "HEAD"])
 def dashboard():
     """Serve the main dashboard interface or simple health check"""
-    # 如果是健康檢查請求（Accept: text/html 或其他），返回簡單響應
+    # HEAD 請求（Render 健康檢查）
+    if request.method == "HEAD":
+        return "", 200
+    
+    # 非 HTML 請求返回簡單 JSON（極快）
     if 'text/html' not in request.headers.get('Accept', ''):
+        return jsonify({"status": "ok"}), 200
+    
+    # HTML 請求返回頁面
+    try:
+        return render_template('index.html')
+    except:
+        # 如果模板失敗，返回簡單響應
         return jsonify({"status": "ok", "service": "HexStrike AI"}), 200
-    return render_template('index.html')
 
 @app.route("/static/<path:filename>")
 def static_files(filename):
     """Serve static files"""
     return send_from_directory('static', filename)
 
-@app.route("/health", methods=["GET"])
+@app.route("/health", methods=["GET", "HEAD"])
 def health_quick():
-    """Quick health check for deployment systems (Render, Docker, K8s)"""
-    try:
-        return jsonify({
-            "status": "healthy",
-            "message": "HexStrike AI Tools API Server is operational",
-            "version": "6.0.1",
-            "timestamp": time.time()
-        }), 200
-    except Exception as e:
-        return jsonify({
-            "status": "unhealthy",
-            "error": str(e)
-        }), 500
+    """Ultra-fast health check for deployment systems (Render, Docker, K8s)"""
+    # HEAD 請求立即返回（最快）
+    if request.method == "HEAD":
+        return "", 200
+    
+    # GET 請求返回最小 JSON（< 5ms）
+    return '{"status":"ok"}', 200, {'Content-Type': 'application/json'}
 
 @app.route("/health/detailed", methods=["GET"])
 @app.route("/health/full", methods=["GET"])

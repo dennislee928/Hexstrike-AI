@@ -18,7 +18,8 @@ def setup_cors(app: Flask):
     cors_origins = app.config.get('CORS_ORIGINS', [
         'http://localhost:3000', 
         'https://localhost:3000',
-        'https://hexstrike-ai-fe.netlify.app'
+        'https://hexstrike-ai-fe.netlify.app',
+        'https://hexstrike-ai.quantumworld',
     ])
     
     # Ensure it's a list
