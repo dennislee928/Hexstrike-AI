@@ -112,8 +112,12 @@ class GobusterTool(BaseTool):
         mode = parameters.get("mode", "dir")
         cmd_parts.append(mode)
         
-        # Add URL
-        cmd_parts.extend(["-u", shlex.quote(target)])
+        # Add target parameter based on mode
+        # DNS 模式使用 -d，其他模式使用 -u
+        if mode == "dns":
+            cmd_parts.extend(["-d", shlex.quote(target)])
+        else:
+            cmd_parts.extend(["-u", shlex.quote(target)])
         
         # Add wordlist
         wordlist = parameters.get("wordlist", "/usr/share/wordlists/dirb/common.txt")
