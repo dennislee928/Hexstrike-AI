@@ -121,8 +121,9 @@ except ImportError as e:
     print("Continuing with legacy API endpoints...")
 
 # API Configuration
-API_PORT = int(os.environ.get('HEXSTRIKE_PORT', 8888))
-API_HOST = os.environ.get('HEXSTRIKE_HOST', '127.0.0.1')
+# 支援 Render 的標準 PORT 環境變數，並向後兼容 HEXSTRIKE_PORT
+API_PORT = int(os.environ.get('PORT', os.environ.get('HEXSTRIKE_PORT', '8888')))
+API_HOST = os.environ.get('HEXSTRIKE_HOST', '0.0.0.0')
 
 # ============================================================================
 # MODERN VISUAL ENGINE (v2.0 ENHANCEMENT)

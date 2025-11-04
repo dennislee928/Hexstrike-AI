@@ -5,7 +5,8 @@ echo "🚀 Starting HexStrike AI v6.0..."
 echo "=================================="
 
 # Set default values
-HEXSTRIKE_PORT=${HEXSTRIKE_PORT:-8888}
+# 支援 Render 的標準 PORT 環境變數
+HEXSTRIKE_PORT=${PORT:-${HEXSTRIKE_PORT:-8888}}
 HEXSTRIKE_HOST=${HEXSTRIKE_HOST:-0.0.0.0}
 LOG_LEVEL=${LOG_LEVEL:-INFO}
 
