@@ -52,7 +52,7 @@ class Config:
     
     # CORS Configuration
     CORS_ORIGINS = os.environ.get('CORS_ORIGINS', 
-        'http://localhost:3000,https://localhost:3000,https://hexstrike-ai-fe.netlify.app').split(',')
+        'http://localhost:3000,https://localhost:3000,https://hexstrike-ai-fe.netlify.app,https://hexstrike-ai.quantumworld').split(',')
     CORS_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH']
     CORS_ALLOW_HEADERS = [
         'Content-Type',
