@@ -64,7 +64,7 @@ export default function JohnPage() {
   const handleScan = async () => {
     setIsRunning(true)
     try {
-      const response = await fetch('https://hexstrike-ai-v6-0.onrender.com/api/tools/john', {
+      const response = await fetch('https://hexstrike-ai.dennisleehappy.org/api/tools/john', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

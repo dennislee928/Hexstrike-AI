@@ -26,7 +26,7 @@ export default function DNSenumPage() {
   const handleScan = async () => {
     setIsRunning(true)
     try {
-      const response = await fetch('https://hexstrike-ai-v6-0.onrender.com/api/tools/dnsenum', {
+      const response = await fetch('https://hexstrike-ai.dennisleehappy.org/api/tools/dnsenum', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ domain, dns_server: dnsServer, wordlist }),

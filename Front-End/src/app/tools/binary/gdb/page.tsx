@@ -29,7 +29,7 @@ export default function GDBPage() {
   const handleScan = async () => {
     setIsRunning(true)
     try {
-      const response = await fetch('https://hexstrike-ai-v6-0.onrender.com/api/tools/gdb', {
+      const response = await fetch('https://hexstrike-ai.dennisleehappy.org/api/tools/gdb', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ binary_file: binaryFile, command }),

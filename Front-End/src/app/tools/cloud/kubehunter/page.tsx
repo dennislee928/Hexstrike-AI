@@ -30,7 +30,7 @@ export default function KubeHunterPage() {
   const handleScan = async () => {
     setIsRunning(true)
     try {
-      const response = await fetch('https://hexstrike-ai-v6-0.onrender.com/api/tools/kube-hunter', {
+      const response = await fetch('https://hexstrike-ai.dennisleehappy.org/api/tools/kube-hunter', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ target, cidr, active }),

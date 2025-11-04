@@ -64,7 +64,7 @@ export default function NiktoPage() {
   const handleScan = async () => {
     setIsRunning(true)
     try {
-      const response = await fetch('https://hexstrike-ai-v6-0.onrender.com/api/tools/nikto', {
+      const response = await fetch('https://hexstrike-ai.dennisleehappy.org/api/tools/nikto', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

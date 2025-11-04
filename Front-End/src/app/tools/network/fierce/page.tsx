@@ -25,7 +25,7 @@ export default function FiercePage() {
   const handleScan = async () => {
     setIsRunning(true)
     try {
-      const response = await fetch('https://hexstrike-ai-v6-0.onrender.com/api/tools/fierce', {
+      const response = await fetch('https://hexstrike-ai.dennisleehappy.org/api/tools/fierce', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ domain, dns_server: dnsServer }),

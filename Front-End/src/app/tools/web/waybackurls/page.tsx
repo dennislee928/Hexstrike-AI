@@ -23,7 +23,7 @@ export default function WaybackurlsPage() {
   const handleScan = async () => {
     setIsRunning(true)
     try {
-      const response = await fetch('https://hexstrike-ai-v6-0.onrender.com/api/tools/waybackurls', {
+      const response = await fetch('https://hexstrike-ai.dennisleehappy.org/api/tools/waybackurls', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ domain }),
