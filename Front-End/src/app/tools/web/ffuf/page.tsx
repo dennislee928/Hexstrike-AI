@@ -68,7 +68,7 @@ export default function FFufPage() {
   const handleScan = async () => {
     setIsRunning(true)
     try {
-      const response = await fetch('https://hexstrike-ai-v6-0.onrender.com/api/tools/ffuf', {
+      const response = await fetch('https://hexstrike-ai.dennisleehappy.org/api/tools/ffuf', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

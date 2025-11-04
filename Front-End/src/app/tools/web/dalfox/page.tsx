@@ -59,7 +59,7 @@ export default function DalfoxPage() {
   const handleScan = async () => {
     setIsRunning(true)
     try {
-      const response = await fetch('https://hexstrike-ai-v6-0.onrender.com/api/tools/dalfox', {
+      const response = await fetch('https://hexstrike-ai.dennisleehappy.org/api/tools/dalfox', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

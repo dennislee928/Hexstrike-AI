@@ -32,7 +32,7 @@ export default function AutoReconPage() {
   const handleScan = async () => {
     setIsRunning(true)
     try {
-      const response = await fetch('https://hexstrike-ai-v6-0.onrender.com/api/tools/autorecon', {
+      const response = await fetch('https://hexstrike-ai.dennisleehappy.org/api/tools/autorecon', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ target, port_scans: portScans, service_scans: serviceScans, timeout }),

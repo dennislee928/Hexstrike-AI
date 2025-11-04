@@ -7,7 +7,7 @@ const nextConfig = {
     unoptimized: true,
   },
   env: {
-    NEXT_PUBLIC_HEXSTRIKE_API_URL: process.env.NEXT_PUBLIC_HEXSTRIKE_API_URL || 'https://hexstrike-ai-v6-0.onrender.com',
+    NEXT_PUBLIC_HEXSTRIKE_API_URL: process.env.NEXT_PUBLIC_HEXSTRIKE_API_URL || 'https://hexstrike-ai.dennisleehappy.org',
   },
   // Disable server-side features for static export
   typescript: {

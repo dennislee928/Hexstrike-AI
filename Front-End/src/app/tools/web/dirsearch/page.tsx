@@ -25,7 +25,7 @@ export default function DirsearchPage() {
   const handleScan = async () => {
     setIsRunning(true)
     try {
-      const response = await fetch('https://hexstrike-ai-v6-0.onrender.com/api/tools/dirsearch', {
+      const response = await fetch('https://hexstrike-ai.dennisleehappy.org/api/tools/dirsearch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ target }),

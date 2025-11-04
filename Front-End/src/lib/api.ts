@@ -19,7 +19,7 @@ import {
 class HexStrikeApiClient {
   private client: AxiosInstance
 
-  constructor(baseURL: string = process.env.NEXT_PUBLIC_HEXSTRIKE_API_URL || 'https://hexstrike-ai-v6-0.onrender.com') {
+  constructor(baseURL: string = process.env.NEXT_PUBLIC_HEXSTRIKE_API_URL || 'https://hexstrike-ai.dennisleehappy.org') {
     this.client = axios.create({
       baseURL,
       timeout: 30000,
@@ -31,11 +31,11 @@ class HexStrikeApiClient {
     // Request interceptor
     this.client.interceptors.request.use(
       (config) => {
-        console.log(`🚀 API Request: ${config.method?.toUpperCase()} ${config.url}`)
+        console.log(`?? API Request: ${config.method?.toUpperCase()} ${config.url}`)
         return config
       },
       (error) => {
-        console.error('❌ API Request Error:', error)
+        console.error('??API Request Error:', error)
         return Promise.reject(error)
       }
     )
@@ -43,11 +43,11 @@ class HexStrikeApiClient {
     // Response interceptor
     this.client.interceptors.response.use(
       (response: AxiosResponse) => {
-        console.log(`✅ API Response: ${response.status} ${response.config.url}`)
+        console.log(`??API Response: ${response.status} ${response.config.url}`)
         return response
       },
       (error) => {
-        console.error('❌ API Response Error:', error.response?.status, error.response?.data)
+        console.error('??API Response Error:', error.response?.status, error.response?.data)
         return Promise.reject(error)
       }
     )

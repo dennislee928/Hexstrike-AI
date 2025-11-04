@@ -57,7 +57,7 @@ export default function WPScanPage() {
   const handleScan = async () => {
     setIsRunning(true)
     try {
-      const response = await fetch('https://hexstrike-ai-v6-0.onrender.com/api/tools/wpscan', {
+      const response = await fetch('https://hexstrike-ai.dennisleehappy.org/api/tools/wpscan', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

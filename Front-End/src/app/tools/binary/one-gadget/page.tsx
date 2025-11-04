@@ -1,4 +1,4 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { ArrowLeft, Settings } from 'lucide-react'
@@ -25,7 +25,7 @@ export default function OneGadgetPage() {
   const handleScan = async () => {
     setIsRunning(true)
     try {
-      const response = await fetch('https://hexstrike-ai-v6-0.onrender.com/api/tools/one-gadget', {
+      const response = await fetch('https://hexstrike-ai.dennisleehappy.org/api/tools/one-gadget', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ target }),

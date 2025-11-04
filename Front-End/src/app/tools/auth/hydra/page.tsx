@@ -66,7 +66,7 @@ export default function HydraPage() {
   const handleScan = async () => {
     setIsRunning(true)
     try {
-      const response = await fetch('https://hexstrike-ai-v6-0.onrender.com/api/tools/hydra', {
+      const response = await fetch('https://hexstrike-ai.dennisleehappy.org/api/tools/hydra', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
