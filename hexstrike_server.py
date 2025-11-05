@@ -11395,7 +11395,7 @@ def metasploit():
 
 @app.route("/api/tools/hydra", methods=["POST"])
 def hydra():
-    """Execute hydra with enhanced logging"""
+    """Execute hydra with enhanced logging and intelligent output parsing"""
     try:
         params = request.json
         target = params.get("target", "")
@@ -11405,6 +11405,9 @@ def hydra():
         password = params.get("password", "")
         password_file = params.get("password_file", "")
         additional_args = params.get("additional_args", "")
+        
+        # 新增：是否返回解析後的結果
+        parse_output = params.get("parse_output", True)
 
         if not target or not service:
             logger.warning("🎯 Hydra called without target or service parameter")
@@ -11418,7 +11421,14 @@ def hydra():
                 "error": "Username/username_file and password/password_file are required"
             }), 400
 
-        command = f"hydra -t 4"
+        # 建構 Hydra 命令（批次模式，避免互動提示）
+        command = "hydra"
+        
+        # 批次模式參數（關鍵！避免互動提示）
+        command += " -f"  # 找到第一個密碼後停止
+        command += " -V"  # 詳細輸出但不互動
+        command += " -t 4"  # 4 個並發連接
+        command += " -o /tmp/hydra_output.txt"  # 輸出到文件
 
         if username:
             command += f" -l {username}"
@@ -11437,8 +11447,73 @@ def hydra():
 
         logger.info(f"🔑 Starting Hydra attack: {target}:{service}")
         result = execute_command(command)
+        
+        # 解析輸出（如果啟用）
+        if parse_output and result.get("success"):
+            try:
+                # 導入解析器
+                import sys
+                sys.path.insert(0, '/app/tools/parsers')
+                from hydra_parser import parse_hydra_output
+                
+                # 解析輸出
+                parsed = parse_hydra_output(
+                    result.get("stdout", ""),
+                    result.get("stderr", ""),
+                    result.get("return_code", 0)
+                )
+                
+                # 建構標準化響應
+                standardized_response = {
+                    # 基本資訊
+                    "success": result["success"],
+                    "tool": "hydra",
+                    "target": f"{target}:{service}",
+                    "timestamp": datetime.now().isoformat(),
+                    "execution_time": result.get("execution_time", 0),
+                    
+                    # 結果摘要（前端友善）
+                    "summary": parsed["test_summary"],
+                    
+                    # 詳細發現
+                    "findings": parsed["findings"],
+                    
+                    # 技術細節
+                    "details": parsed.get("details", {}),
+                    
+                    # 元數據
+                    "metadata": {
+                        "parameters_used": {
+                            "target": target,
+                            "service": service,
+                            "username": username if username else "from_file",
+                            "password": "***" if password else "from_file"
+                        },
+                        "warnings": parsed["warnings"],
+                        "recommendations": parsed["recommendations"]
+                    },
+                    
+                    # 原始輸出（可選，供進階用戶）
+                    "raw_output": {
+                        "stdout": result.get("stdout", ""),
+                        "stderr": result.get("stderr", ""),
+                        "return_code": result.get("return_code", 0),
+                        "available": True
+                    }
+                }
+                
+                logger.info(f"📊 Hydra attack completed: {parsed['test_summary']['brief']}")
+                return jsonify(standardized_response)
+                
+            except Exception as parse_error:
+                logger.warning(f"⚠️ Failed to parse Hydra output: {str(parse_error)}")
+                # 解析失敗時返回原始結果
+                result["parse_error"] = str(parse_error)
+                result["parsed"] = False
+        
         logger.info(f"📊 Hydra attack completed for {target}")
         return jsonify(result)
+        
     except Exception as e:
         logger.error(f"💥 Error in hydra endpoint: {str(e)}")
         return jsonify({
@@ -11447,13 +11522,17 @@ def hydra():
 
 @app.route("/api/tools/john", methods=["POST"])
 def john():
-    """Execute john with enhanced logging"""
+    """Execute john with enhanced logging and intelligent output parsing"""
     try:
         params = request.json
         hash_file = params.get("hash_file", "")
         wordlist = params.get("wordlist", "/usr/share/wordlists/rockyou.txt")
         format_type = params.get("format", "")
         additional_args = params.get("additional_args", "")
+        
+        # 新增：是否返回解析後的結果
+        parse_output = params.get("parse_output", True)
+        pot_file = params.get("pot_file", "/tmp/john.pot")
 
         if not hash_file:
             logger.warning("🔐 John called without hash_file parameter")
@@ -11461,7 +11540,12 @@ def john():
                 "error": "Hash file parameter is required"
             }), 400
 
-        command = f"john"
+        # 建構 John 命令（優化輸出和性能）
+        command = "john"
+        
+        # 批次模式參數（關鍵！避免進度覆蓋和混亂輸出）
+        command += f" --pot={pot_file}"  # 指定 pot 文件位置
+        command += f" --session=/tmp/john_session"  # 指定會話文件
 
         if format_type:
             command += f" --format={format_type}"
@@ -11476,8 +11560,74 @@ def john():
 
         logger.info(f"🔐 Starting John the Ripper: {hash_file}")
         result = execute_command(command)
+        
+        # 解析輸出（如果啟用）
+        if parse_output and result.get("success"):
+            try:
+                # 導入解析器
+                import sys
+                sys.path.insert(0, '/app/tools/parsers')
+                from john_parser import parse_john_output
+                
+                # 解析輸出
+                parsed = parse_john_output(
+                    result.get("stdout", ""),
+                    result.get("stderr", ""),
+                    result.get("return_code", 0),
+                    pot_file=pot_file
+                )
+                
+                # 建構標準化響應
+                standardized_response = {
+                    # 基本資訊
+                    "success": result["success"],
+                    "tool": "john",
+                    "target": hash_file,
+                    "timestamp": datetime.now().isoformat(),
+                    "execution_time": result.get("execution_time", 0),
+                    
+                    # 結果摘要（前端友善）
+                    "summary": parsed["test_summary"],
+                    
+                    # 詳細發現
+                    "findings": parsed["findings"],
+                    
+                    # 技術細節
+                    "details": parsed.get("details", {}),
+                    
+                    # 元數據
+                    "metadata": {
+                        "parameters_used": {
+                            "hash_file": hash_file,
+                            "wordlist": wordlist,
+                            "format": format_type if format_type else "auto-detect",
+                            "pot_file": pot_file
+                        },
+                        "warnings": parsed["warnings"],
+                        "recommendations": parsed["recommendations"]
+                    },
+                    
+                    # 原始輸出（可選，供進階用戶）
+                    "raw_output": {
+                        "stdout": result.get("stdout", ""),
+                        "stderr": result.get("stderr", ""),
+                        "return_code": result.get("return_code", 0),
+                        "available": True
+                    }
+                }
+                
+                logger.info(f"📊 John completed: {parsed['test_summary']['brief']}")
+                return jsonify(standardized_response)
+                
+            except Exception as parse_error:
+                logger.warning(f"⚠️ Failed to parse John output: {str(parse_error)}")
+                # 解析失敗時返回原始結果
+                result["parse_error"] = str(parse_error)
+                result["parsed"] = False
+        
         logger.info(f"📊 John the Ripper completed")
         return jsonify(result)
+        
     except Exception as e:
         logger.error(f"💥 Error in john endpoint: {str(e)}")
         return jsonify({
@@ -11666,7 +11816,7 @@ def amass():
 
 @app.route("/api/tools/hashcat", methods=["POST"])
 def hashcat():
-    """Execute Hashcat for password cracking with enhanced logging"""
+    """Execute Hashcat for password cracking with enhanced logging and intelligent output parsing"""
     try:
         params = request.json
         hash_file = params.get("hash_file", "")
@@ -11675,6 +11825,10 @@ def hashcat():
         wordlist = params.get("wordlist", "/usr/share/wordlists/rockyou.txt")
         mask = params.get("mask", "")
         additional_args = params.get("additional_args", "")
+        
+        # 新增：是否返回解析後的結果
+        parse_output = params.get("parse_output", True)
+        outfile = params.get("outfile", "/tmp/hashcat.out")
 
         if not hash_file:
             logger.warning("🔐 Hashcat called without hash_file parameter")
@@ -11688,7 +11842,18 @@ def hashcat():
                 "error": "Hash type parameter is required"
             }), 400
 
-        command = f"hashcat -m {hash_type} -a {attack_mode} {hash_file}"
+        # 建構 Hashcat 命令（優化輸出和性能）
+        command = f"hashcat -m {hash_type} -a {attack_mode}"
+        
+        # 批次模式參數（關鍵！避免進度條和混亂輸出）
+        command += " --quiet"  # 靜默模式
+        command += " --potfile-disable"  # 禁用 pot 文件
+        command += f" --outfile={outfile}"  # 輸出到文件
+        command += " --outfile-format=2"  # plain:hash 格式
+        command += " --status"  # 顯示狀態
+        command += " --status-timer=1"  # 每秒更新
+        
+        command += f" {hash_file}"
 
         if attack_mode == "0" and wordlist:
             command += f" {wordlist}"
@@ -11698,10 +11863,78 @@ def hashcat():
         if additional_args:
             command += f" {additional_args}"
 
-        logger.info(f"🔐 Starting Hashcat attack: mode {attack_mode}")
+        logger.info(f"🔐 Starting Hashcat attack: mode {attack_mode}, type {hash_type}")
         result = execute_command(command)
+        
+        # 解析輸出（如果啟用）
+        if parse_output and result.get("success"):
+            try:
+                # 導入解析器
+                import sys
+                sys.path.insert(0, '/app/tools/parsers')
+                from hashcat_parser import parse_hashcat_output
+                
+                # 解析輸出
+                parsed = parse_hashcat_output(
+                    result.get("stdout", ""),
+                    result.get("stderr", ""),
+                    result.get("return_code", 0),
+                    outfile=outfile
+                )
+                
+                # 建構標準化響應
+                standardized_response = {
+                    # 基本資訊
+                    "success": result["success"],
+                    "tool": "hashcat",
+                    "target": hash_file,
+                    "timestamp": datetime.now().isoformat(),
+                    "execution_time": result.get("execution_time", 0),
+                    
+                    # 結果摘要（前端友善）
+                    "summary": parsed["test_summary"],
+                    
+                    # 詳細發現
+                    "findings": parsed["findings"],
+                    
+                    # 技術細節
+                    "details": parsed.get("details", {}),
+                    
+                    # 元數據
+                    "metadata": {
+                        "parameters_used": {
+                            "hash_file": hash_file,
+                            "hash_type": hash_type,
+                            "attack_mode": attack_mode,
+                            "wordlist": wordlist if attack_mode == "0" else None,
+                            "mask": mask if attack_mode == "3" else None,
+                            "outfile": outfile
+                        },
+                        "warnings": parsed["warnings"],
+                        "recommendations": parsed["recommendations"]
+                    },
+                    
+                    # 原始輸出（可選，供進階用戶）
+                    "raw_output": {
+                        "stdout": result.get("stdout", ""),
+                        "stderr": result.get("stderr", ""),
+                        "return_code": result.get("return_code", 0),
+                        "available": True
+                    }
+                }
+                
+                logger.info(f"📊 Hashcat completed: {parsed['test_summary']['brief']}")
+                return jsonify(standardized_response)
+                
+            except Exception as parse_error:
+                logger.warning(f"⚠️ Failed to parse Hashcat output: {str(parse_error)}")
+                # 解析失敗時返回原始結果
+                result["parse_error"] = str(parse_error)
+                result["parsed"] = False
+        
         logger.info(f"📊 Hashcat attack completed")
         return jsonify(result)
+        
     except Exception as e:
         logger.error(f"💥 Error in hashcat endpoint: {str(e)}")
         return jsonify({
