@@ -11221,12 +11221,18 @@ def nikto():
 
 @app.route("/api/tools/sqlmap", methods=["POST"])
 def sqlmap():
-    """Execute sqlmap with enhanced logging"""
+    """Execute sqlmap with enhanced logging and intelligent output parsing"""
     try:
         params = request.json
         url = params.get("url", "")
         data = params.get("data", "")
+        method = params.get("method", "GET")
+        level = params.get("level", "1")
+        risk = params.get("risk", "1")
         additional_args = params.get("additional_args", "")
+        
+        # 新增：是否返回解析後的結果
+        parse_output = params.get("parse_output", True)
 
         if not url:
             logger.warning("🎯 SQLMap called without URL parameter")
@@ -11234,18 +11240,109 @@ def sqlmap():
                 "error": "URL parameter is required"
             }), 400
 
-        command = f"sqlmap -u {url} --batch"
-
+        # 建構 SQLMap 命令（批次模式，避免互動提示）
+        command = f"sqlmap -u {url}"
+        
+        # 批次模式參數（關鍵！避免所有互動提示）
+        command += " --batch"                    # 永不詢問用戶輸入
+        command += " --flush-session"            # 清除之前的會話
+        command += " --fresh-queries"            # 忽略之前的查詢結果
+        command += " --answers='quit=N,follow=Y,continue=Y'"  # 自動回答常見問題
+        
+        # 測試參數
+        command += f" --level={level}"
+        command += f" --risk={risk}"
+        
+        # HTTP 方法
+        if method and method.upper() != "GET":
+            command += f" --method={method}"
+        
+        # POST 數據
         if data:
             command += f" --data=\"{data}\""
-
+        
+        # 輸出控制（減少冗長輸出）
+        command += " --output-dir=/tmp/sqlmap"   # 指定輸出目錄
+        
+        # 額外參數
         if additional_args:
             command += f" {additional_args}"
 
-        logger.info(f"💉 Starting SQLMap scan: {url}")
+        logger.info(f"💉 Starting SQLMap scan: {url} (level={level}, risk={risk})")
         result = execute_command(command)
+        
+        # 解析輸出（如果啟用）
+        if parse_output and result.get("success"):
+            try:
+                # 導入解析器
+                import sys
+                sys.path.insert(0, '/app/tools/parsers')
+                from sqlmap_parser import parse_sqlmap_output
+                
+                # 解析輸出
+                parsed = parse_sqlmap_output(
+                    result.get("stdout", ""),
+                    result.get("stderr", ""),
+                    result.get("return_code", 0)
+                )
+                
+                # 建構標準化響應
+                standardized_response = {
+                    # 基本資訊
+                    "success": result["success"],
+                    "tool": "sqlmap",
+                    "target": url,
+                    "timestamp": datetime.now().isoformat(),
+                    "execution_time": result.get("execution_time", 0),
+                    
+                    # 結果摘要（前端友善）
+                    "summary": parsed["test_summary"],
+                    
+                    # 詳細發現
+                    "findings": parsed["findings"],
+                    
+                    # 技術細節
+                    "details": {
+                        "vulnerable": parsed["vulnerable"],
+                        "dbms": parsed["dbms"],
+                        "injection_points": parsed["injection_points"],
+                        "injection_types": parsed["injection_types"],
+                        "waf_detected": parsed["waf_detected"],
+                        "techniques_used": parsed["techniques_used"]
+                    },
+                    
+                    # 元數據
+                    "metadata": {
+                        "parameters_used": {
+                            "level": level,
+                            "risk": risk,
+                            "method": method
+                        },
+                        "warnings": parsed["warnings"],
+                        "recommendations": parsed["recommendations"]
+                    },
+                    
+                    # 原始輸出（可選，供進階用戶）
+                    "raw_output": {
+                        "stdout": result.get("stdout", ""),
+                        "stderr": result.get("stderr", ""),
+                        "return_code": result.get("return_code", 0),
+                        "available": True
+                    }
+                }
+                
+                logger.info(f"📊 SQLMap scan completed: {parsed['test_summary']['brief']}")
+                return jsonify(standardized_response)
+                
+            except Exception as parse_error:
+                logger.warning(f"⚠️ Failed to parse SQLMap output: {str(parse_error)}")
+                # 解析失敗時返回原始結果
+                result["parse_error"] = str(parse_error)
+                result["parsed"] = False
+                
         logger.info(f"📊 SQLMap scan completed for {url}")
         return jsonify(result)
+        
     except Exception as e:
         logger.error(f"💥 Error in sqlmap endpoint: {str(e)}")
         return jsonify({
