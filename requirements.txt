@@ -96,3 +96,14 @@ bcrypt==4.0.1                   # Pin bcrypt version for passlib compatibility (
 # 5. Browser Agent requires Chrome/Chromium and ChromeDriver installation
 #
 # For complete installation instructions and setup guides, see README.md
+
+# ============================================================================
+# AI/LLM INTEGRATION (v7.0 - Enhanced Intelligence)
+# ============================================================================
+openai>=1.10.0,<2.0.0              # OpenAI GPT-4 API
+langchain>=0.1.0,<1.0.0            # LangChain framework for agentic AI
+langchain-openai>=0.0.5,<1.0.0     # LangChain OpenAI integration
+langchain-community>=0.0.20,<1.0.0 # Community integrations
+chromadb>=0.4.22,<1.0.0            # Vector database for RAG
+tiktoken>=0.5.2,<1.0.0             # Token counting for OpenAI
+tenacity>=8.2.3,<9.0.0             # Retry logic for API calls

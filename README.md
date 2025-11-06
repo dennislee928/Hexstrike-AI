@@ -181,6 +181,77 @@ def create_attack_chain(self, profile: TargetProfile, objective: str):
         ]
 ```
 
+#### 技術實作：規則型決策引擎 vs 真正的 AI
+
+當前的 IntelligentDecisionEngine 採用**規則型啟發式演算法**，而非基於大型語言模型（LLM）。以下是其運作原理：
+
+##### 1. 靜態評分系統 (Static Scoring System)
+
+引擎維護預定義的工具效能評分表，針對不同目標類型給予固定分數：
+
+- Web 應用：nuclei (0.95), dalfox (0.93), wpscan (0.95)
+- 網路主機：nmap (0.95), rustscan (0.9), masscan (0.92)
+- 二進制檔案：ghidra (0.95), radare2 (0.9), checksec (0.85)
+
+這些分數是**靜態的**，由安全專家根據經驗預先設定，不會根據實際掃描結果動態調整。
+
+##### 2. 規則型目標識別 (Rule-based Target Identification)
+
+使用正則表達式和字串比對判斷目標類型：
+
+```python
+if target.startswith('http://') or target.startswith('https://'):
+    return TargetType.WEB_APPLICATION
+elif re.match(r'^(\d{1,3}\.){3}\d{1,3}$', target):
+    return TargetType.NETWORK_HOST
+elif target.endswith(('.exe', '.bin', '.elf')):
+    return TargetType.BINARY_FILE
+```
+
+##### 3. 預定義攻擊模式 (Predefined Attack Patterns)
+
+系統包含 15+ 種預先編排的攻擊鏈模板，例如：
+- `web_reconnaissance`：nmap → httpx → katana → nuclei
+- `bug_bounty_high_impact`：nuclei (critical) → sqlmap → jaeles
+- `ctf_pwn_challenge`：pwninit → checksec → ghidra → ropper
+
+##### 4. 條件式參數優化 (Conditional Parameter Optimization)
+
+基於 if-else 邏輯調整工具參數：
+
+```python
+if technology == TechnologyStack.WORDPRESS:
+    use_wpscan()
+elif stealth_mode:
+    nmap_timing = "-T2"  # 慢速掃描
+else:
+    nmap_timing = "-T4"  # 快速掃描
+```
+
+#### 限制與優勢
+
+**限制：**
+- 無學習能力：無法從歷史掃描結果學習和改進
+- 規則死板：無法處理未預見的目標類型或複雜情境
+- 缺乏語境理解：不理解漏洞的業務影響或攻擊者視角
+- 無創造性：只能執行預定義的攻擊策略
+
+**優勢：**
+- 快速響應：無需 API 呼叫，毫秒級決策
+- 可預測性：行為一致，易於除錯
+- 無成本：不需要 LLM API 費用
+- 離線運作：無需網路連線
+
+#### 未來升級方向：整合真正的 LLM
+
+v7.0 將整合 OpenAI GPT-4 + LangChain，實現：
+- 動態學習：根據掃描結果自動調整工具評分
+- 語境分析：理解業務邏輯漏洞和複雜攻擊鏈
+- 創意思考：生成自訂 exploit 和繞過技術
+- 自然語言交互：直接理解安全研究員的測試意圖
+
+---
+
 ### 第 3 層：專業 AI Intelligence Managers
 
 **1. CVE Intelligence Manager**
