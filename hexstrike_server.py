@@ -11863,10 +11863,8 @@ def hashcat():
         # 解析輸出（如果啟用）
         if parse_output and result.get("success"):
             try:
-                # 導入解析器
-                import sys
-                sys.path.insert(0, '/app/tools/parsers')
-                from hashcat_parser import parse_hashcat_output
+                # 導入解析器（使用相對導入）
+                from tools.parsers.hashcat_parser import parse_hashcat_output
                 
                 # 解析輸出
                 parsed = parse_hashcat_output(
