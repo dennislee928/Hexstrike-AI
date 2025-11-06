@@ -11274,10 +11274,8 @@ def sqlmap():
         # 解析輸出（如果啟用）
         if parse_output and result.get("success"):
             try:
-                # 導入解析器
-                import sys
-                sys.path.insert(0, '/app/tools/parsers')
-                from sqlmap_parser import parse_sqlmap_output
+                # 導入解析器（使用相對導入）
+                from tools.parsers.sqlmap_parser import parse_sqlmap_output
                 
                 # 解析輸出
                 parsed = parse_sqlmap_output(
@@ -11451,10 +11449,8 @@ def hydra():
         # 解析輸出（如果啟用）
         if parse_output and result.get("success"):
             try:
-                # 導入解析器
-                import sys
-                sys.path.insert(0, '/app/tools/parsers')
-                from hydra_parser import parse_hydra_output
+                # 導入解析器（使用相對導入）
+                from tools.parsers.hydra_parser import parse_hydra_output
                 
                 # 解析輸出
                 parsed = parse_hydra_output(
@@ -11564,10 +11560,8 @@ def john():
         # 解析輸出（如果啟用）
         if parse_output and result.get("success"):
             try:
-                # 導入解析器
-                import sys
-                sys.path.insert(0, '/app/tools/parsers')
-                from john_parser import parse_john_output
+                # 導入解析器（使用相對導入）
+                from tools.parsers.john_parser import parse_john_output
                 
                 # 解析輸出
                 parsed = parse_john_output(
