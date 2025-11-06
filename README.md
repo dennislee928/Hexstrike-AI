@@ -2,15 +2,15 @@
 
 <img src="assets/hexstrike-logo.png" alt="HexStrike AI Logo" width="220" style="margin-bottom: 20px;"/>
 
-# HexStrike AI MCP Agents v6.0
-### AI-Powered MCP Cybersecurity Automation Platform
+# HexStrike AI MCP Agents v7.0
+### AI-Powered MCP Cybersecurity Automation Platform with LLM Integration
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue.svg)](https://www.python.org/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)](https://hub.docker.com)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Security](https://img.shields.io/badge/Security-Penetration%20Testing-red.svg)](https://github.com/0x4m4/hexstrike-ai)
 [![MCP](https://img.shields.io/badge/MCP-Compatible-purple.svg)](https://github.com/0x4m4/hexstrike-ai)
-[![Version](https://img.shields.io/badge/Version-6.0.0-orange.svg)](https://github.com/0x4m4/hexstrike-ai/releases)
+[![Version](https://img.shields.io/badge/Version-7.0.0-orange.svg)](https://github.com/0x4m4/hexstrike-ai/releases)
 [![Tools](https://img.shields.io/badge/Security%20Tools-150%2B-brightgreen.svg)](https://github.com/0x4m4/hexstrike-ai)
 [![Agents](https://img.shields.io/badge/AI%20Agents-12%2B-purple.svg)](https://github.com/0x4m4/hexstrike-ai)
 [![Stars](https://img.shields.io/github/stars/0x4m4/hexstrike-ai?style=social)](https://github.com/0x4m4/hexstrike-ai)
@@ -242,13 +242,59 @@ else:
 - 無成本：不需要 LLM API 費用
 - 離線運作：無需網路連線
 
-#### 未來升級方向：整合真正的 LLM
+#### ✅ v7.0 LLM 整合已完成
 
-v7.0 將整合 OpenAI GPT-4 + LangChain，實現：
-- 動態學習：根據掃描結果自動調整工具評分
-- 語境分析：理解業務邏輯漏洞和複雜攻擊鏈
-- 創意思考：生成自訂 exploit 和繞過技術
-- 自然語言交互：直接理解安全研究員的測試意圖
+**HexStrike AI v7.0** 現已整合 OpenAI GPT-4 + LangChain，實現真正的智能決策：
+
+**核心功能：**
+- ✅ **LLMEnhancedDecisionEngine** - GPT-4 驅動的智能決策引擎
+- ✅ **動態工具選擇** - LLM 根據目標特徵智能推薦最佳工具組合
+- ✅ **智能參數優化** - 基於上下文的自動參數調整和優化
+- ✅ **RAG 知識庫** - ChromaDB 向量資料庫整合安全知識檢索
+- ✅ **攻擊鏈生成** - LLM 自動建構情境感知的攻擊鏈
+- ✅ **報告生成** - AI 自動生成專業級滲透測試報告摘要
+- ✅ **優雅降級** - 無 API key 時自動回退到規則型引擎
+
+**技術棧：**
+- OpenAI GPT-4 Turbo Preview
+- LangChain Framework (v1.0+)
+- ChromaDB Vector Database
+- RAG (Retrieval-Augmented Generation)
+- Automatic Retry & Error Handling
+
+**新增 API 端點：**
+- `/api/intelligence/llm-enhanced-scan` - LLM 增強智能掃描
+- `/api/intelligence/rag-search` - RAG 知識庫搜尋
+
+**環境配置：**
+```bash
+# .env 設定
+OPENAI_API_KEY=sk-your-api-key-here
+LLM_MODEL=gpt-4-turbo-preview
+LLM_TEMPERATURE=0.1
+ENABLE_LLM=true
+ENABLE_RAG=true
+CHROMA_DB_PATH=./data/chroma_db
+```
+
+**使用範例：**
+```bash
+# LLM 增強掃描
+curl -X POST http://localhost:8888/api/intelligence/llm-enhanced-scan \
+  -H "Content-Type: application/json" \
+  -d '{
+    "target": "http://example.com",
+    "objective": "bug_bounty"
+  }'
+
+# RAG 知識庫查詢
+curl -X POST http://localhost:8888/api/intelligence/rag-search \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "SQL Injection bypass techniques",
+    "k": 5
+  }'
+```
 
 ---
 
@@ -654,9 +700,9 @@ curl -X POST https://hexstrike-ai.dennisleehappy.org/api/intelligence/create-att
 
 ---
 
-**版本**: 6.0.1  
-**更新日期**: 2025-11-04  
-**狀態**: ✅ Production Ready
+**版本**: 7.0.0  
+**更新日期**: 2025-11-06  
+**狀態**: ✅ Production Ready with LLM Integration
 
 
 ---
@@ -711,7 +757,7 @@ make deploy-local  # Build, run, and test in one command
 
 ## Architecture Overview
 
-HexStrike AI MCP v6.0 features a multi-agent architecture with autonomous AI agents, intelligent decision-making, and vulnerability intelligence.
+HexStrike AI MCP v7.0 features a multi-agent architecture with LLM-powered autonomous AI agents, intelligent decision-making, RAG knowledge base, and vulnerability intelligence.
 
 ```mermaid
 %%{init: {"themeVariables": {
@@ -726,11 +772,16 @@ HexStrike AI MCP v6.0 features a multi-agent architecture with autonomous AI age
   "nodeTextColor": "#fffde7"
 }}}%%
 graph TD
-    A[AI Agent - Claude/GPT/Copilot] -->|MCP Protocol| B[HexStrike MCP Server v6.0]
+    A[AI Agent - Claude/GPT/Copilot] -->|MCP Protocol| B[HexStrike MCP Server v7.0 + LLM]
     
     B --> C[Intelligent Decision Engine]
     B --> D[12+ Autonomous AI Agents]
     B --> E[Modern Visual Engine]
+    B --> F1[LLM Enhanced Engine v7.0]
+    
+    F1 --> F2[GPT-4 Turbo]
+    F1 --> F3[LangChain Framework]
+    F1 --> F4[RAG Knowledge Base]
     
     C --> F[Tool Selection AI]
     C --> G[Parameter Optimization]
@@ -763,6 +814,10 @@ graph TD
     style C fill:#ff8a80,stroke:#b71c1c,stroke-width:2px,color:#fffde7
     style D fill:#ff8a80,stroke:#b71c1c,stroke-width:2px,color:#fffde7
     style E fill:#ff8a80,stroke:#b71c1c,stroke-width:2px,color:#fffde7
+    style F1 fill:#9c27b0,stroke:#e040fb,stroke-width:3px,color:#fffde7
+    style F2 fill:#ba68c8,stroke:#9c27b0,stroke-width:2px,color:#fffde7
+    style F3 fill:#ba68c8,stroke:#9c27b0,stroke-width:2px,color:#fffde7
+    style F4 fill:#ba68c8,stroke:#9c27b0,stroke-width:2px,color:#fffde7
 ```
 
 How to Use  HexStrike AI
@@ -1599,6 +1654,8 @@ Configure VS Code settings in `.vscode/settings.json`:
 | `/api/intelligence/analyze-target` | POST | AI-powered target analysis |
 | `/api/intelligence/select-tools` | POST | Intelligent tool selection |
 | `/api/intelligence/optimize-parameters` | POST | Parameter optimization |
+| **`/api/intelligence/llm-enhanced-scan`** | **POST** | **🆕 LLM-enhanced intelligent scanning (v7.0)** |
+| **`/api/intelligence/rag-search`** | **POST** | **🆕 RAG knowledge base search (v7.0)** |
 
 ### Common MCP Tools
 
@@ -1734,19 +1791,30 @@ AI 代理："我將使用 hexstrike-ai MCP 工具幫您分析 CTF 二進制文�
 
 ---
 
-## HexStrike AI v7.0 - Release Coming Soon!
+## 🚀 HexStrike AI v7.0 - Now Available!
 
-### Key Improvements & New Features
+### 🎉 New LLM-Powered Features
 
-- **Streamlined Installation Process** - One-command setup with automated dependency management
-- **Docker Container Support** - Containerized deployment for consistent environments
-- **250+ Specialized AI Agents/Tools** - Expanded from 150+ to 250+ autonomous security agents
-- **Native Desktop Client** - Full-featured Application ([www.hexstrike.com](https://www.hexstrike.com))
-- **Advanced Web Automation** - Enhanced Selenium integration with anti-detection
-- **JavaScript Runtime Analysis** - Deep DOM inspection and dynamic content handling
-- **Memory Optimization** - 40% reduction in resource usage for large-scale operations
-- **Enhanced Error Handling** - Graceful degradation and automatic recovery mechanisms
-- **Bypassing Limitations** - Fixed limited allowed mcp tools by MCP clients
+**LLM Integration (OpenAI GPT-4 + LangChain):**
+- ✅ **LLMEnhancedDecisionEngine** - True AI-powered decision making with GPT-4
+- ✅ **Intelligent Tool Selection** - LLM analyzes targets and recommends optimal tool combinations
+- ✅ **Context-Aware Parameter Optimization** - Automatic parameter tuning based on target characteristics
+- ✅ **RAG Knowledge Base** - ChromaDB integration for security knowledge retrieval
+- ✅ **Smart Attack Chain Generation** - LLM creates context-aware, multi-stage attack strategies
+- ✅ **Professional Report Generation** - AI-generated penetration test summaries
+- ✅ **Graceful Degradation** - Automatic fallback to rule-based engine when LLM unavailable
+
+**Core Improvements:**
+- ✅ **Docker Container Support** - Containerized deployment for consistent environments
+- ✅ **Streamlined Installation** - One-command setup with automated dependency management
+- ✅ **Enhanced Error Handling** - Robust retry logic and automatic recovery mechanisms
+- ✅ **Advanced Web Automation** - Enhanced Selenium integration with anti-detection
+- ✅ **Memory Optimization** - Improved resource usage for large-scale operations
+
+**Coming Soon in v7.1+:**
+- 🔜 **250+ Specialized AI Agents/Tools** - Expanding from 150+ to 250+ autonomous security agents
+- 🔜 **Native Desktop Client** - Full-featured Application ([www.hexstrike.com](https://www.hexstrike.com))
+- 🔜 **JavaScript Runtime Analysis** - Deep DOM inspection and dynamic content handling
 
 
 ---

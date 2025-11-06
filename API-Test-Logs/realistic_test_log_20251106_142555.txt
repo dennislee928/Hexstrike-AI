@@ -1,0 +1,171 @@
+[0;36m============================================================================[0m
+[0;36m🎯 HexStrike AI - Realistic Penetration Testing Demonstration[0m
+[0;36m============================================================================[0m
+Target Server: https://hexstrike-ai.dennisleehappy.org
+Test Target: http://testphp.vulnweb.com (Intentionally Vulnerable)
+Test Time: Thu Nov  6 14:25:56     2025
+[0;36m============================================================================[0m
+
+[1;33m[1] Core System Health[0m
+[0;36m────────────────────────────────────────────────────────────────────────────[0m
+[0;34m[TEST][0m Health Check
+  [0;36m→[0m GET /health
+[0;31m[FAIL][0m Health Check (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m System Telemetry
+  [0;36m→[0m GET /api/telemetry
+[0;31m[FAIL][0m System Telemetry (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m Cache Statistics
+  [0;36m→[0m GET /api/cache/stats
+[0;31m[FAIL][0m Cache Statistics (HTTP 000)
+  [1;33mResponse:[0m 
+
+[1;33m[2] AI Intelligence & Decision Engine[0m
+[0;36m────────────────────────────────────────────────────────────────────────────[0m
+[0;34m[TEST][0m AI Target Analysis
+  [0;36m→[0m POST /api/intelligence/analyze-target
+[0;31m[FAIL][0m AI Target Analysis (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m AI Tool Selection
+  [0;36m→[0m POST /api/intelligence/select-tools
+[0;31m[FAIL][0m AI Tool Selection (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m AI Attack Chain Creation
+  [0;36m→[0m POST /api/intelligence/create-attack-chain
+[0;31m[FAIL][0m AI Attack Chain Creation (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m AI Parameter Optimization
+  [0;36m→[0m POST /api/intelligence/optimize-parameters
+[0;31m[FAIL][0m AI Parameter Optimization (HTTP 000)
+  [1;33mResponse:[0m 
+
+[1;33m[3] Network Reconnaissance[0m
+[0;36m────────────────────────────────────────────────────────────────────────────[0m
+[0;34m[TEST][0m Nmap Quick Scan
+  [0;36m→[0m POST /api/tools/nmap/scan
+[0;31m[FAIL][0m Nmap Quick Scan (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m HTTPx Web Probing
+  [0;36m→[0m POST /api/tools/httpx/probe
+[0;31m[FAIL][0m HTTPx Web Probing (HTTP 000)
+  [1;33mResponse:[0m 
+
+[1;33m[4] Web Application Security Testing[0m
+[0;36m────────────────────────────────────────────────────────────────────────────[0m
+[0;34m[TEST][0m WhatWeb Technology Detection
+  [0;36m→[0m POST /api/tools/whatweb/scan
+[0;31m[FAIL][0m WhatWeb Technology Detection (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m Katana Web Crawling
+  [0;36m→[0m POST /api/tools/katana/crawl
+[0;31m[FAIL][0m Katana Web Crawling (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m Nuclei Vulnerability Scan
+  [0;36m→[0m POST /api/tools/nuclei/scan
+[0;31m[FAIL][0m Nuclei Vulnerability Scan (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m Directory Enumeration (Gobuster)
+  [0;36m→[0m POST /api/tools/gobuster
+[0;31m[FAIL][0m Directory Enumeration (Gobuster) (HTTP 000)
+  [1;33mResponse:[0m 
+
+[1;33m[5] Bug Bounty Automation[0m
+[0;36m────────────────────────────────────────────────────────────────────────────[0m
+[0;34m[TEST][0m Bug Bounty Reconnaissance
+  [0;36m→[0m POST /api/workflows/bug-bounty/reconnaissance
+[0;31m[FAIL][0m Bug Bounty Reconnaissance (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m Technology Detection Workflow
+  [0;36m→[0m POST /api/detection/technology
+[0;31m[FAIL][0m Technology Detection Workflow (HTTP 000)
+  [1;33mResponse:[0m 
+
+[1;33m[6] CVE & Vulnerability Intelligence[0m
+[0;36m────────────────────────────────────────────────────────────────────────────[0m
+[0;34m[TEST][0m CVE Search - Apache
+  [0;36m→[0m POST /api/cve/search
+[0;31m[FAIL][0m CVE Search - Apache (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m CVE Details - Log4Shell
+  [0;36m→[0m POST /api/cve/details
+[0;31m[FAIL][0m CVE Details - Log4Shell (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m Exploit Database Search
+  [0;36m→[0m POST /api/exploits/search
+[0;31m[FAIL][0m Exploit Database Search (HTTP 000)
+  [1;33mResponse:[0m 
+
+[1;33m[7] AI-Powered Exploit Generation[0m
+[0;36m────────────────────────────────────────────────────────────────────────────[0m
+[0;34m[TEST][0m XSS Payload Generation
+  [0;36m→[0m POST /api/ai/advanced-payload-generation
+[0;31m[FAIL][0m XSS Payload Generation (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m Vulnerability Correlation
+  [0;36m→[0m POST /api/ai/correlation-analysis
+[0;31m[FAIL][0m Vulnerability Correlation (HTTP 000)
+  [1;33mResponse:[0m 
+
+[1;33m[8] Process Management[0m
+[0;36m────────────────────────────────────────────────────────────────────────────[0m
+[0;34m[TEST][0m Active Processes List
+  [0;36m→[0m GET /api/processes/list
+[0;31m[FAIL][0m Active Processes List (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m Process Dashboard
+  [0;36m→[0m GET /api/processes/dashboard
+[0;31m[FAIL][0m Process Dashboard (HTTP 000)
+  [1;33mResponse:[0m 
+
+[1;33m[9] v7.0 LLM-Powered Features[0m
+[0;36m────────────────────────────────────────────────────────────────────────────[0m
+[0;34m[TEST][0m LLM Enhanced Intelligent Scan
+  [0;36m→[0m POST /api/intelligence/llm-enhanced-scan
+[0;31m[FAIL][0m LLM Enhanced Intelligent Scan (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;34m[TEST][0m RAG Security Knowledge Search
+  [0;36m→[0m POST /api/intelligence/rag-search
+[0;31m[FAIL][0m RAG Security Knowledge Search (HTTP 000)
+  [1;33mResponse:[0m 
+
+[0;36m============================================================================[0m
+[0;36m📊 Test Results Summary[0m
+[0;36m============================================================================[0m
+Total Tests:  24
+[0;32m✅ Passed:[0m     0
+[0;31m❌ Failed:[0m     24
+[1;33m⚠️  Skipped:[0m    0
+[0;36m============================================================================[0m
+Pass Rate: 0%
+
+[0;36mResults by Category:[0m
+  [1] Core System Health: Essential for operation
+  [2] AI Intelligence Engine: ⭐ Core feature - Smart tool selection
+  [3] Network Reconnaissance: Port scanning & host discovery
+  [4] Web Security Testing: XSS, SQLi, directory enum
+  [5] Bug Bounty Workflows: Automated recon & hunting
+  [6] Vulnerability Intelligence: CVE & exploit database
+  [7] AI Exploit Generation: Smart payload creation
+  [8] Process Management: Real-time execution monitoring
+  [9] v7.0 LLM Features: GPT-4 enhanced intelligence
+
+[0;32m📄 JSON results saved to:[0m API-Test-Logs/realistic_test_results_20251106_142555.json
+[0;32m📝 Log file saved to:[0m API-Test-Logs/realistic_test_log_20251106_142555.txt
+
+[0;31m❌ Multiple failures detected. Please check server logs.[0m

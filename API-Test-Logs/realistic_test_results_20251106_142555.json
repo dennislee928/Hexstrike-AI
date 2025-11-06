@@ -1,0 +1,13 @@
+{
+  "test_metadata": {
+    "timestamp": "2025-11-06T14:27:13+0800",
+    "server": "https://hexstrike-ai.dennisleehappy.org",
+    "test_target": "http://testphp.vulnweb.com",
+    "total_tests": 24,
+    "passed": 0,
+    "failed": 24,
+    "skipped": 0,
+    "pass_rate": 0
+  },
+  "test_results": []
+}
