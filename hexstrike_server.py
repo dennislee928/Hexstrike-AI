@@ -10256,6 +10256,95 @@ def detect_technologies():
         return jsonify({"error": f"Server error: {str(e)}"}), 500
 
 # ============================================================================
+# LLM ENHANCED INTELLIGENCE API ENDPOINTS (v7.0)
+# ============================================================================
+
+@app.route('/api/intelligence/llm-enhanced-scan', methods=['POST'])
+def llm_enhanced_scan():
+    """LLM 增強智能掃描"""
+    try:
+        from core.llm_engine import LLMEnhancedDecisionEngine
+        
+        data = request.get_json()
+        if not data or 'target' not in data:
+            return jsonify({"error": "Target is required"}), 400
+            
+        target = data.get('target')
+        objective = data.get('objective', 'comprehensive')
+        
+        logger.info(f"🤖 Starting LLM-enhanced scan for {target}")
+        
+        # 初始化 LLM 引擎
+        llm_engine = LLMEnhancedDecisionEngine()
+        
+        # 分析目標
+        profile = llm_engine.analyze_target(target)
+        
+        # 使用 LLM 建立攻擊鏈
+        attack_chain = llm_engine.create_intelligent_attack_chain(profile, objective)
+        
+        return jsonify({
+            "success": True,
+            "profile": profile.to_dict(),
+            "attack_chain": attack_chain.to_dict(),
+            "llm_enabled": llm_engine.llm_enabled,
+            "message": "LLM-enhanced analysis completed successfully"
+        })
+        
+    except ImportError as e:
+        logger.error(f"💥 LLM dependencies not available: {str(e)}")
+        return jsonify({
+            "error": "LLM functionality not available. Please install required dependencies.",
+            "missing_deps": "openai, langchain, langchain-openai, langchain-community"
+        }), 503
+        
+    except Exception as e:
+        logger.error(f"💥 Error in LLM-enhanced scan: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+@app.route('/api/intelligence/rag-search', methods=['POST'])
+def rag_knowledge_search():
+    """RAG 知識庫搜尋"""
+    try:
+        from core.rag_knowledge_base import SecurityKnowledgeBase
+        
+        data = request.get_json()
+        if not data or 'query' not in data:
+            return jsonify({"error": "Query is required"}), 400
+        
+        query = data.get('query')
+        k = data.get('k', 5)  # 返回結果數量
+        
+        logger.info(f"🔍 RAG knowledge search: {query}")
+        
+        kb = SecurityKnowledgeBase()
+        results = kb.search_similar_vulnerabilities(query, k=k)
+        
+        return jsonify({
+            "success": True,
+            "query": query,
+            "results": [
+                {
+                    "content": doc.page_content,
+                    "metadata": doc.metadata
+                }
+                for doc in results
+            ],
+            "count": len(results)
+        })
+        
+    except ImportError as e:
+        logger.error(f"💥 RAG dependencies not available: {str(e)}")
+        return jsonify({
+            "error": "RAG functionality not available. Please install required dependencies.",
+            "missing_deps": "langchain-community, chromadb"
+        }), 503
+        
+    except Exception as e:
+        logger.error(f"💥 Error in RAG search: {str(e)}")
+        return jsonify({"error": f"Server error: {str(e)}"}), 500
+
+# ============================================================================
 # BUG BOUNTY HUNTING WORKFLOW API ENDPOINTS
 # ============================================================================
 
@@ -11274,10 +11363,8 @@ def sqlmap():
         # 解析輸出（如果啟用）
         if parse_output and result.get("success"):
             try:
-                # 導入解析器
-                import sys
-                sys.path.insert(0, '/app/tools/parsers')
-                from sqlmap_parser import parse_sqlmap_output
+                # 導入解析器（使用相對導入）
+                from tools.parsers.sqlmap_parser import parse_sqlmap_output
                 
                 # 解析輸出
                 parsed = parse_sqlmap_output(
@@ -11451,10 +11538,8 @@ def hydra():
         # 解析輸出（如果啟用）
         if parse_output and result.get("success"):
             try:
-                # 導入解析器
-                import sys
-                sys.path.insert(0, '/app/tools/parsers')
-                from hydra_parser import parse_hydra_output
+                # 導入解析器（使用相對導入）
+                from tools.parsers.hydra_parser import parse_hydra_output
                 
                 # 解析輸出
                 parsed = parse_hydra_output(
@@ -11564,10 +11649,8 @@ def john():
         # 解析輸出（如果啟用）
         if parse_output and result.get("success"):
             try:
-                # 導入解析器
-                import sys
-                sys.path.insert(0, '/app/tools/parsers')
-                from john_parser import parse_john_output
+                # 導入解析器（使用相對導入）
+                from tools.parsers.john_parser import parse_john_output
                 
                 # 解析輸出
                 parsed = parse_john_output(
@@ -11869,10 +11952,8 @@ def hashcat():
         # 解析輸出（如果啟用）
         if parse_output and result.get("success"):
             try:
-                # 導入解析器
-                import sys
-                sys.path.insert(0, '/app/tools/parsers')
-                from hashcat_parser import parse_hashcat_output
+                # 導入解析器（使用相對導入）
+                from tools.parsers.hashcat_parser import parse_hashcat_output
                 
                 # 解析輸出
                 parsed = parse_hashcat_output(

@@ -1,16 +1,7 @@
 """
-Tools Module
-
-This module contains security tools organized by category with a unified interface
-for tool execution and management.
+HexStrike AI Tools Package
+安全測試工具集合
 """
 
-from .base_tool import BaseTool, ToolResult, ToolStatus
-from .tool_registry import ToolRegistry
-
-__all__ = [
-    'BaseTool',
-    'ToolResult', 
-    'ToolStatus',
-    'ToolRegistry'
-]
+# 這個文件使 tools 目錄成為 Python 包
+# 允許從 tools.parsers 導入解析器
