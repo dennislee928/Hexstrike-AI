@@ -283,91 +283,69 @@ $jsonOutput = @{
 $jsonOutput | ConvertTo-Json -Depth 10 | Out-File -FilePath $jsonFile -Encoding UTF8
 Write-Host "`nJSON results saved to: $jsonFile" -ForegroundColor Green
 
-# Generate detailed text report
-$report = @"
-================================================================================
-HexStrike AI - Production API Test Report
-================================================================================
-Test Run: $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")
-Server: $BaseUrl
-Duration: $([math]::Round($TotalDuration, 2)) seconds
+# Generate text report
+$reportContent = "=" * 80 + "`n"
+$reportContent += "HexStrike AI - Production API Test Report`n"
+$reportContent += "=" * 80 + "`n"
+$reportContent += "Test Run: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')`n"
+$reportContent += "Server: $BaseUrl`n"
+$reportContent += "Duration: $([math]::Round($TotalDuration, 2)) seconds`n`n"
 
-================================================================================
-SUMMARY
-================================================================================
-Total Tests:  $total
-Passed:       $passed
-Failed:       $failed
-Pass Rate:    $passRate%
+$reportContent += "=" * 80 + "`n"
+$reportContent += "SUMMARY`n"
+$reportContent += "=" * 80 + "`n"
+$reportContent += "Total Tests:  $total`n"
+$reportContent += "Passed:       $passed`n"
+$reportContent += "Failed:       $failed`n"
+$reportContent += "Pass Rate:    $passRate%`n`n"
 
-================================================================================
-RESULTS BY CATEGORY
-================================================================================
-$($byCategory | ForEach-Object {
-    $catPassed = ($_.Group | Where-Object {$_.status -eq "PASS"}).Count
-    $catTotal = $_.Count
+$reportContent += "=" * 80 + "`n"
+$reportContent += "RESULTS BY CATEGORY`n"
+$reportContent += "=" * 80 + "`n"
+foreach ($cat in $byCategory) {
+    $catPassed = ($cat.Group | Where-Object {$_.status -eq "PASS"}).Count
+    $catTotal = $cat.Count
     $catRate = [math]::Round(($catPassed/$catTotal)*100, 1)
-    "  [$($_.Name)] $catPassed/$catTotal ($catRate%)"
-} | Out-String)
+    $reportContent += "  [$($cat.Name)] $catPassed/$catTotal ($catRate%)`n"
+}
+$reportContent += "`n"
 
-================================================================================
-DETAILED RESULTS
-================================================================================
-$($TestResults | ForEach-Object {
-@"
-[$($_.status)] $($_.test_name)
-  Category: $($_.category)
-  Endpoint: $($_.method) $($_.endpoint)
-  HTTP Code: $($_.http_code) (Expected: $($_.expected_code))
-  Duration: $($_.duration_ms)ms
-  $(if ($_.error) { "Error: $($_.error)" } else { "Response: $($_.response_preview)..." })
+$reportContent += "=" * 80 + "`n"
+$reportContent += "DETAILED RESULTS`n"
+$reportContent += "=" * 80 + "`n"
+foreach ($result in $TestResults) {
+    $reportContent += "[$($result.status)] $($result.test_name)`n"
+    $reportContent += "  Category: $($result.category)`n"
+    $reportContent += "  Endpoint: $($result.method) $($result.endpoint)`n"
+    $reportContent += "  HTTP Code: $($result.http_code) (Expected: $($result.expected_code))`n"
+    $reportContent += "  Duration: $($result.duration_ms)ms`n"
+    if ($result.error) {
+        $reportContent += "  Error: $($result.error)`n"
+    } else {
+        $reportContent += "  Response: $($result.response_preview)...`n"
+    }
+    $reportContent += "`n"
+}
 
-"@
-} | Out-String)
+if ($errorsByCode) {
+    $reportContent += "=" * 80 + "`n"
+    $reportContent += "ERRORS ANALYSIS`n"
+    $reportContent += "=" * 80 + "`n"
+    foreach ($group in $errorsByCode) {
+        $reportContent += "HTTP $($group.Name): $($group.Count) failures`n"
+        $reportContent += "Affected Endpoints:`n"
+        foreach ($err in $group.Group) {
+            $reportContent += "  - $($err.method) $($err.endpoint)`n"
+        }
+        $reportContent += "`n"
+    }
+}
 
-================================================================================
-ERRORS ANALYSIS
-================================================================================
-$($errorsByCode | ForEach-Object {
-@"
-HTTP $($_.Name): $($_.Count) failures
-Affected Endpoints:
-$($_.Group | ForEach-Object { "  - $($_.method) $($_.endpoint)" } | Out-String)
-"@
-} | Out-String)
+$reportContent += "=" * 80 + "`n"
+$reportContent += "End of Report`n"
+$reportContent += "=" * 80 + "`n"
 
-================================================================================
-RECOMMENDATIONS
-================================================================================
-$(if ($failed -gt 0) {
-@"
-Failed Tests Detected:
-- Total Failures: $failed
-- Pass Rate: $passRate%
-
-Recommended Actions:
-$(if ($errorsByCode | Where-Object {$_.Name -eq "404"}) {
-"  1. 404 Errors: Check API route definitions in hexstrike_server.py
-"}
-$(if ($errorsByCode | Where-Object {$_.Name -eq "500"}) {
-"  2. 500 Errors: Check server logs for internal errors:
-     docker logs hexstrike
-"}
-$(if ($errorsByCode | Where-Object {$_.Name -eq "503"}) {
-"  3. 503 Errors: LLM dependencies not installed - redeploy v7.0
-     See DEPLOY_V7.0.md for instructions
-"}
-"@
-} else {
-"All tests passed! Server is functioning normally."
-})
-
-================================================================================
-End of Report
-================================================================================
-"@
-
-$report | Out-File -FilePath $reportFile -Encoding UTF8
+$reportContent | Out-File -FilePath $reportFile -Encoding UTF8
 Write-Host "Text report saved to: $reportFile" -ForegroundColor Green
 
 Write-Host "`nTest completed successfully!" -ForegroundColor Green
@@ -375,4 +353,3 @@ Write-Host "Check $OutputDir for detailed results.`n" -ForegroundColor Gray
 
 # Return exit code
 if ($failed -gt 0) { exit 1 } else { exit 0 }
-
