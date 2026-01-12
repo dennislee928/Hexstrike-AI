@@ -26,9 +26,23 @@ if ! command -v python3 &> /dev/null; then
 fi
 
 # 檢查 PyInstaller
-if ! python3 -c "import PyInstaller" 2>/dev/null; then
-    echo -e "${YELLOW}⚠️  PyInstaller not found. Installing...${NC}"
-    pip3 install pyinstaller
+PYINSTALLER_CMD=""
+if python3 -c "import PyInstaller" 2>/dev/null; then
+    PYINSTALLER_CMD="python3 -m PyInstaller"
+elif command -v pyinstaller &> /dev/null; then
+    PYINSTALLER_CMD="pyinstaller"
+elif [ -f ~/.local/bin/pyinstaller ]; then
+    PYINSTALLER_CMD="$HOME/.local/bin/pyinstaller"
+    echo -e "${YELLOW}⚠️  Using PyInstaller from ~/.local/bin (pipx installation)${NC}"
+else
+    echo -e "${YELLOW}⚠️  PyInstaller not found. Attempting to install...${NC}"
+    pip3 install pyinstaller || {
+        echo -e "${RED}❌ Failed to install PyInstaller. Please install manually:${NC}"
+        echo -e "   pip3 install pyinstaller"
+        echo -e "   OR: pipx install pyinstaller && pipx ensurepath"
+        exit 1
+    }
+    PYINSTALLER_CMD="python3 -m PyInstaller"
 fi
 
 # 檢查 Electron Builder
@@ -46,7 +60,7 @@ cd ..
 
 # 構建後端
 echo -e "${GREEN}🐍 Building backend...${NC}"
-python3 -m PyInstaller pyinstaller.spec --clean --noconfirm
+$PYINSTALLER_CMD pyinstaller.spec --clean --noconfirm
 
 # 移動後端可執行檔到構建目錄
 mkdir -p dist

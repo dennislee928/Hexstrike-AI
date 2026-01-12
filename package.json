@@ -9,7 +9,7 @@
     "electron:dev": "NODE_ENV=development electron .",
     "electron:build": "npm run build:frontend && npm run build:backend && electron-builder",
     "build:frontend": "cd Front-End && npm install && npm run build",
-    "build:backend": "python3 -m PyInstaller pyinstaller.spec --clean --noconfirm",
+    "build:backend": "python3 -m PyInstaller pyinstaller.spec --clean --noconfirm 2>/dev/null || pyinstaller pyinstaller.spec --clean --noconfirm 2>/dev/null || $HOME/.local/bin/pyinstaller pyinstaller.spec --clean --noconfirm",
     "build:win": "npm run build:frontend && npm run build:backend && electron-builder --win",
     "build:mac": "npm run build:frontend && npm run build:backend && electron-builder --mac",
     "build:linux": "npm run build:frontend && npm run build:backend && electron-builder --linux",

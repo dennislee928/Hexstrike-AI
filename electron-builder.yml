@@ -85,7 +85,6 @@ dmg:
   window:
     width: 540
     height: 380
-  background: electron/icons/dmg-background.png
 
 pkg:
   allowAnywhere: false
