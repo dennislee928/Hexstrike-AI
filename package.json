@@ -1,0 +1,25 @@
+{
+  "name": "hexstrike-ai-desktop",
+  "version": "7.0.0",
+  "description": "HexStrike AI - AI-Powered Penetration Testing Platform",
+  "main": "electron/main.js",
+  "author": "HexStrike AI",
+  "license": "MIT",
+  "scripts": {
+    "electron:dev": "NODE_ENV=development electron .",
+    "electron:build": "npm run build:frontend && npm run build:backend && electron-builder",
+    "build:frontend": "cd Front-End && npm install && npm run build",
+    "build:backend": "python3 -m PyInstaller pyinstaller.spec --clean --noconfirm",
+    "build:win": "npm run build:frontend && npm run build:backend && electron-builder --win",
+    "build:mac": "npm run build:frontend && npm run build:backend && electron-builder --mac",
+    "build:linux": "npm run build:frontend && npm run build:backend && electron-builder --linux",
+    "postinstall": "electron-builder install-app-deps"
+  },
+  "devDependencies": {
+    "electron": "^28.0.0",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "extends": "electron-builder.yml"
+  }
+}

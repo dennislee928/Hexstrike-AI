@@ -1,0 +1,100 @@
+appId: com.hexstrike.ai
+productName: HexStrike AI
+copyright: Copyright © 2025 HexStrike AI
+
+directories:
+  buildResources: build
+  output: dist
+
+files:
+  - 'Front-End/out/**/*'
+  - 'electron/**/*'
+  - 'package.json'
+  - '!node_modules/**/*'
+  - '!**/*.map'
+  - '!**/.*'
+
+extraResources:
+  - from: 'dist'
+    to: 'backend'
+    filter:
+      - 'hexstrike-server*'
+      - 'hexstrike-server.exe'
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+    - target: portable
+      arch:
+        - x64
+  icon: electron/icons/icon.ico
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  requestedExecutionLevel: asInvoker
+
+mac:
+  target:
+    - target: dmg
+      arch:
+        - x64
+        - arm64
+    - target: pkg
+      arch:
+        - x64
+        - arm64
+  icon: electron/icons/icon.icns
+  category: public.app-category.developer-tools
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: electron/entitlements.mac.plist
+  entitlementsInherit: electron/entitlements.mac.plist
+
+linux:
+  target:
+    - target: deb
+      arch:
+        - x64
+  icon: electron/icons/icon.png
+  category: Development
+  artifactName: ${productName}-${version}-${arch}.${ext}
+  desktop:
+    Name: HexStrike AI
+    Comment: AI-Powered Penetration Testing Platform
+    Categories: Development;Security;
+    StartupNotify: true
+
+nsis:
+  oneClick: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  installerIcon: electron/icons/icon.ico
+  uninstallerIcon: electron/icons/icon.ico
+  installerHeaderIcon: electron/icons/icon.ico
+
+dmg:
+  contents:
+    - x: 130
+      y: 220
+    - x: 410
+      y: 220
+      type: link
+      path: /Applications
+  window:
+    width: 540
+    height: 380
+  background: electron/icons/dmg-background.png
+
+pkg:
+  allowAnywhere: false
+  allowCurrentUserHome: false
+  allowRootDirectory: false
+  installLocation: /Applications
+
+compression: maximum
+buildVersion: ${version}
+npmRebuild: false
+electronDownload:
+  cache: ~/.electron

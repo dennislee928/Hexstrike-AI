@@ -19,7 +19,7 @@ import {
 class HexStrikeApiClient {
   private client: AxiosInstance
 
-  constructor(baseURL: string = process.env.NEXT_PUBLIC_HEXSTRIKE_API_URL || 'https://hexstrike-ai.dennisleehappy.org') {
+  constructor(baseURL: string = process.env.NEXT_PUBLIC_HEXSTRIKE_API_URL || (typeof window !== 'undefined' && (window as any).electronAPI ? 'http://localhost:8888' : 'https://hexstrike-ai.dennisleehappy.org')) {
     this.client = axios.create({
       baseURL,
       timeout: 30000,

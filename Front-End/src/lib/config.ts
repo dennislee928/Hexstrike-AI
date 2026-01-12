@@ -5,9 +5,13 @@
  */
 
 // API Base URL - 從環境變數讀取,或使用預設值
+// 在 Electron 環境中，使用 localhost
+const isElectron = typeof window !== 'undefined' && (window as any).electronAPI;
+const defaultApiUrl = isElectron ? 'http://localhost:8888' : 'https://hexstrike-ai.dennisleehappy.org';
+
 export const API_BASE_URL = 
   process.env.NEXT_PUBLIC_HEXSTRIKE_API_URL || 
-  'https://hexstrike-ai.dennisleehappy.org'
+  defaultApiUrl
 
 // API Endpoints
 export const API_ENDPOINTS = {

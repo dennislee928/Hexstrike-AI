@@ -1,0 +1,22 @@
+# Electron 構建輸出
+dist/
+dist-win32/
+dist-win/
+dist-mac/
+dist-linux/
+build/
+app/
+Front-End/out/
+
+# PyInstaller 輸出
+*.spec.bak
+*.pyc
+__pycache__/
+
+# Electron 緩存
+.electron/
+.electron-gyp/
+node_modules/
+
+# 臨時文件
+*.tmp
